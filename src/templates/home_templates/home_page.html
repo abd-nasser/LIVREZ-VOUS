@@ -16,7 +16,7 @@
                 <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
                     <a href="#vision" class="hover:text-[#059669] transition-colors">La Vision</a>
                     <a href="#" class="hover:text-[#059669] transition-colors">Entreprises de livraison</a>
-                    <a href="#" class="hover:text-[#059669] transition-colors">Devenir Livreur</a>
+                    <a href="{% url 'accounts_app:inscription-livreurs' %}" class="hover:text-[#059669] transition-colors">Devenir Livreur</a>
                 </nav>
 
                 <div class="flex items-center space-x-3">
@@ -52,7 +52,7 @@
                     <a href="#" class="btn bg-[#F97316] hover:bg-[#C2410C] text-white border-none btn-lg rounded-2xl w-full sm:w-auto shadow-xl shadow-[#F97316]/20 font-bold">
                         Inscrire mon entreprise
                     </a>
-                    <a href="#" class="btn btn-outline border-[#059669] text-[#059669] hover:bg-[#059669] hover:border-[#059669] hover:text-white btn-lg rounded-2xl w-full sm:w-auto">
+                    <a href="{% url 'accounts_app:inscription-livreurs' %}" class="btn btn-outline border-[#059669] text-[#059669] hover:bg-[#059669] hover:border-[#059669] hover:text-white btn-lg rounded-2xl w-full sm:w-auto">
                         Postuler comme livreur
                     </a>
                 </div>
@@ -205,7 +205,7 @@
                 <a href="#" class="btn btn-outline border-base-300 btn-sm rounded-xl text-xs font-semibold">
                     Espace Entreprise
                 </a>
-                <a href="#" class="btn btn-outline border-[#F97316] text-[#F97316] hover:bg-[#F97316] hover:border-[#F97316] hover:text-white btn-sm rounded-xl text-xs font-semibold">
+                <a href="{% url 'accounts_app:inscription-livreurs' %}" class="btn btn-outline border-[#F97316] text-[#F97316] hover:bg-[#F97316] hover:border-[#F97316] hover:text-white btn-sm rounded-xl text-xs font-semibold">
                     Devenir Livreur
                 </a>
             </div>

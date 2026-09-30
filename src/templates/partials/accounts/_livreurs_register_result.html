@@ -1,0 +1,78 @@
+<div class="bg-base-100 rounded-3xl border border-[#059669]/30 p-8 sm:p-12 text-center shadow-2xl relative overflow-hidden animate-fade-in"
+     x-data="{ showToast: true }">
+    
+    <!-- Halos de lumière décoratifs en fond -->
+    <div class="absolute -top-16 left-1/2 -translate-x-1/2 w-64 h-64 bg-[#059669]/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-16 right-0 w-48 h-48 bg-[#F97316]/15 rounded-full blur-2xl pointer-events-none"></div>
+
+    <!-- TOAST POPUP (S'affiche en haut de l'écran avec Alpine.js) -->
+    <template x-teleport="body">
+        <div x-show="showToast" 
+             x-transition:enter="transition ease-out duration-300 transform"
+             x-transition:enter-start="-translate-y-full opacity-0"
+             x-transition:enter-end="translate-y-0 opacity-100"
+             x-transition:leave="transition ease-in duration-200 transform"
+             x-transition:leave-start="translate-y-0 opacity-100"
+             x-transition:leave-end="-translate-y-full opacity-0"
+             class="fixed top-6 right-4 left-4 sm:left-auto sm:max-w-md z-50">
+            
+            <div class="bg-base-100 border-2 border-[#059669] shadow-2xl rounded-2xl p-4 flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-[#059669] text-white flex items-center justify-center font-extrabold text-2xl shrink-0 shadow-md shadow-[#059669]/30">
+                    🎉
+                </div>
+                <div class="flex-grow">
+                    <p class="font-black text-sm text-base-content">{{ Title|default:"Bienvenue !" }}</p>
+                    <p class="text-xs text-base-content/70 mt-0.5 leading-snug">
+                        Inscription enregistrée avec succès.
+                    </p>
+                </div>
+                <button @click="showToast = false" class="btn btn-xs btn-circle btn-ghost text-base-content/50 hover:text-base-content">✕</button>
+            </div>
+        </div>
+    </template>
+
+    <!-- ICONE DE SUCCÈS ANIME -->
+    <div class="relative z-10 mx-auto w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#059669]/10 border-2 border-[#059669] flex items-center justify-center mb-6 shadow-xl shadow-[#059669]/20">
+        <svg class="w-10 h-10 sm:w-12 sm:h-12 text-[#059669] animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+        </svg>
+    </div>
+
+    <!-- TITRE & MESSAGE DJANGO -->
+    <div class="relative z-10 max-w-lg mx-auto">
+        <span class="badge bg-[#F97316] text-white font-bold text-[11px] uppercase tracking-wider px-3 py-1 border-none mb-3">
+            Compte en cours de validation
+        </span>
+        
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-base-content tracking-tight">
+            {{ Title }} !
+        </h2>
+
+        <p class="mt-4 text-base sm:text-lg text-base-content/80 font-medium leading-relaxed">
+            {{ message }}
+        </p>
+    </div>
+
+    <!-- PROCHAINES ÉTAPES (CARDS D'EXPLICATION) -->
+    <div class="relative z-10 mt-8 pt-8 border-t border-base-200 grid grid-cols-1 sm:grid-cols-2 gap-4 text-left max-w-lg mx-auto">
+        <div class="p-4 rounded-2xl bg-base-200/50 border border-base-300">
+            <span class="text-xl block mb-1">⏱️</span>
+            <h4 class="font-bold text-xs uppercase tracking-wider text-base-content/60">Délai de vérification</h4>
+            <p class="text-xs text-base-content/80 mt-1">Vos documents (CNI, Selfie) sont analysés sous <strong>24h max</strong>.</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-base-200/50 border border-base-300">
+            <span class="text-xl block mb-1">💬</span>
+            <h4 class="font-bold text-xs uppercase tracking-wider text-base-content/60">Notification WhatsApp</h4>
+            <p class="text-xs text-base-content/80 mt-1">Vous recevrez un SMS/WhatsApp dès l'activation de votre compte.</p>
+        </div>
+    </div>
+
+    <!-- BOUTON D'ACTION -->
+    <div class="relative z-10 mt-8">
+        <a href="/" class="btn bg-[#059669] hover:bg-[#047857] text-white border-none btn-lg rounded-2xl font-bold shadow-xl shadow-[#059669]/20 w-full sm:w-auto px-8">
+            Retourner à l'accueil
+        </a>
+    </div>
+
+</div>

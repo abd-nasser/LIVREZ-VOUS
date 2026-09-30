@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div x-data="{ openLogin: false, activeTab: 'clients' }" class="min-h-screen bg-base-100 text-base-content font-sans antialiased">
+
+    <header class="sticky top-0 z-40 bg-base-100/80 backdrop-blur-md border-b border-base-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 rounded-xl bg-[#059669] flex items-center justify-center text-white font-black text-xl shadow-lg shadow-[#059669]/20">
+                        LV
+                    </div>
+                    <span class="font-bold text-xl tracking-tight">Livrez-vous<span class="text-[#F97316]">.</span></span>
+                </div>
+
+                <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
+                    <a href="#vision" class="hover:text-[#059669] transition-colors">La Vision</a>
+                    <a href="#" class="hover:text-[#059669] transition-colors">Entreprises de livraison</a>
+                    <a href="#" class="hover:text-[#059669] transition-colors">Devenir Livreur</a>
+                </nav>
+
+                <div class="flex items-center space-x-3">
+                    <button @click="openLogin = true" class="btn bg-[#059669] hover:bg-[#047857] text-white btn-sm sm:btn-md rounded-xl border-none shadow-md shadow-[#059669]/20">
+                        Se connecter
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28">
+        <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#059669]/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute top-1/2 right-0 w-80 h-80 bg-[#F97316]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div class="text-center max-w-3xl mx-auto">
+                
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFEDD5] text-[#C2410C] text-xs sm:text-sm font-semibold mb-6 animate-pulse">
+                    <span class="w-2 h-2 rounded-full bg-[#F97316]"></span>
+                    Lancement Quartier Pilote — 1er Mois Gratuit (20 premières structures)
+                </div>
+
+                <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight">
+                    Trouvez un livreur en quelques secondes. <span class="text-[#059669]">Fini le doute.</span>
+                </h1>
+
+                <p class="mt-6 text-lg sm:text-xl text-base-content/70 leading-relaxed">
+                    Plus besoin d'attendre des heures sur WhatsApp à 22h. Une communauté de livreurs vérifiés et géolocalisés à votre service dans votre quartier.
+                </p>
+
+                <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="#" class="btn bg-[#F97316] hover:bg-[#C2410C] text-white border-none btn-lg rounded-2xl w-full sm:w-auto shadow-xl shadow-[#F97316]/20 font-bold">
+                        Inscrire mon entreprise
+                    </a>
+                    <a href="#" class="btn btn-outline border-[#059669] text-[#059669] hover:bg-[#059669] hover:border-[#059669] hover:text-white btn-lg rounded-2xl w-full sm:w-auto">
+                        Postuler comme livreur
+                    </a>
+                </div>
+
+                <div class="mt-12 grid grid-cols-3 gap-4 pt-8 border-t border-base-200 text-center">
+                    <div>
+                        <p class="text-2xl sm:text-3xl font-extrabold text-[#059669]">100%</p>
+                        <p class="text-xs sm:text-sm text-base-content/60">Livreurs vérifiés CNI</p>
+                    </div>
+                    <div>
+                        <p class="text-2xl sm:text-3xl font-extrabold text-[#059669]">&lt; 2 min</p>
+                        <p class="text-xs sm:text-sm text-base-content/60">Pour trouver une course</p>
+                    </div>
+                    <div>
+                        <p class="text-2xl sm:text-3xl font-extrabold text-[#F97316]">0 FCFA</p>
+                        <p class="text-xs sm:text-sm text-base-content/60">Commission sur les courses</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="vision" class="py-16 bg-base-200/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold">Comment ça marche pour vous ?</h2>
+                <p class="text-base-content/70 mt-2">Une plateforme pensée pour les réalités du terrain au Burkina.</p>
+            </div>
+
+            <div class="flex justify-center mb-8">
+                <div class="bg-base-100 p-1.5 rounded-2xl border border-base-300 inline-flex gap-2">
+                    <button @click="activeTab = 'clients'" 
+                            :class="activeTab === 'clients' ? 'bg-[#059669] text-white shadow-md' : 'text-base-content/70 hover:text-base-content'"
+                            class="px-5 py-2.5 rounded-xl font-medium text-sm transition-all">
+                        Pour les Clients
+                    </button>
+                    <button @click="activeTab = 'entreprises'" 
+                            :class="activeTab === 'entreprises' ? 'bg-[#059669] text-white shadow-md' : 'text-base-content/70 hover:text-base-content'"
+                            class="px-5 py-2.5 rounded-xl font-medium text-sm transition-all">
+                        Sociétés de Livraison
+                    </button>
+                    <button @click="activeTab = 'livreurs'" 
+                            :class="activeTab === 'livreurs' ? 'bg-[#059669] text-white shadow-md' : 'text-base-content/70 hover:text-base-content'"
+                            class="px-5 py-2.5 rounded-xl font-medium text-sm transition-all">
+                        Livreurs Indépendants
+                    </button>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'clients'" x-transition.opacity class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                <div class="card bg-base-100 p-6 rounded-2xl border border-base-200 shadow-sm">
+                    <div class="w-12 h-12 rounded-xl bg-[#059669]/10 text-[#059669] flex items-center justify-center font-bold text-xl mb-4">1</div>
+                    <h3 class="font-bold text-lg mb-2">Pas de recherche sans fin</h3>
+                    <p class="text-sm text-base-content/70">Voyez directement qui est disponible dans votre quartier, même tard le soir.</p>
+                </div>
+                <div class="card bg-base-100 p-6 rounded-2xl border border-base-200 shadow-sm">
+                    <div class="w-12 h-12 rounded-xl bg-[#059669]/10 text-[#059669] flex items-center justify-center font-bold text-xl mb-4">2</div>
+                    <h3 class="font-bold text-lg mb-2">Sécurité garantie</h3>
+                    <p class="text-sm text-base-content/70">Chaque livreur possède une identité vérifiée avec CNI et photo de profil certifiée.</p>
+                </div>
+                <div class="card bg-base-100 p-6 rounded-2xl border border-base-200 shadow-sm">
+                    <div class="w-12 h-12 rounded-xl bg-[#059669]/10 text-[#059669] flex items-center justify-center font-bold text-xl mb-4">3</div>
+                    <h3 class="font-bold text-lg mb-2">Suivi en direct</h3>
+                    <p class="text-sm text-base-content/70">Suivez la progression de votre colis en temps réel sur la carte.</p>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'entreprises'" x-transition.opacity class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto" style="display: none;">
+                <div class="card bg-base-100 p-6 rounded-2xl border border-base-200 shadow-sm">
+                    <div class="w-12 h-12 rounded-xl bg-[#F97316]/10 text-[#F97316] flex items-center justify-center font-bold text-xl mb-4">📊</div>
+                    <h3 class="font-bold text-lg mb-2">Abonnement fixe</h3>
+                    <p class="text-sm text-base-content/70">0 FCFA de commission. Gardez 100% de votre Chiffre d'Affaires sur chaque course.</p>
+                </div>
+                <div class="card bg-base-100 p-6 rounded-2xl border border-base-200 shadow-sm">
+                    <div class="w-12 h-12 rounded-xl bg-[#F97316]/10 text-[#F97316] flex items-center justify-center font-bold text-xl mb-4">👥</div>
+                    <h3 class="font-bold text-lg mb-2">Gestion de flotte</h3>
+                    <p class="text-sm text-base-content/70">Gérez vos livreurs et vos administrateurs selon le palier choisi (Standard, Pro, Premium).</p>
+                </div>
+                <div class="card bg-base-100 p-6 rounded-2xl border border-base-200 shadow-sm">
+                    <div class="w-12 h-12 rounded-xl bg-[#F97316]/10 text-[#F97316] flex items-center justify-center font-bold text-xl mb-4">🚀</div>
+                    <h3 class="font-bold text-lg mb-2">Mois de lancement gratuit</h3>
+                    <p class="text-sm text-base-content/70">Testez la plateforme pendant 30 jours sans débourser un seul franc.</p>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'livreurs'" x-transition.opacity class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto" style="display: none;">
+                <div class="card bg-base-100 p-6 rounded-2xl border border-base-200 shadow-sm">
+                    <div class="w-12 h-12 rounded-xl bg-[#059669]/10 text-[#059669] flex items-center justify-center font-bold text-xl mb-4">📱</div>
+                    <h3 class="font-bold text-lg mb-2">Inscrivez-vous en 5 min</h3>
+                    <p class="text-sm text-base-content/70">Téléversez votre CNI + selfie, attendez la validation et commencez à rouler.</p>
+                </div>
+                <div class="card bg-base-100 p-6 rounded-2xl border border-base-200 shadow-sm">
+                    <div class="w-12 h-12 rounded-xl bg-[#059669]/10 text-[#059669] flex items-center justify-center font-bold text-xl mb-4">🕒</div>
+                    <h3 class="font-bold text-lg mb-2">Horaires 100% libres</h3>
+                    <p class="text-sm text-base-content/70">Activez votre statut "Disponible" sur l'application quand vous voulez travailler.</p>
+                </div>
+                <div class="card bg-base-100 p-6 rounded-2xl border border-base-200 shadow-sm">
+                    <div class="w-12 h-12 rounded-xl bg-[#059669]/10 text-[#059669] flex items-center justify-center font-bold text-xl mb-4">⭐</div>
+                    <h3 class="font-bold text-lg mb-2">Faites-vous connaître</h3>
+                    <p class="text-sm text-base-content/70">Construisez votre réputation avec des avis clients réels pour recevoir plus de courses.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <div x-show="openLogin" 
+         x-transition.opacity
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+         style="display: none;">
+        
+        <div @click.away="openLogin = false" class="bg-base-100 w-full max-w-md rounded-3xl border border-base-300 p-6 sm:p-8 shadow-2xl relative">
+            
+            <button @click="openLogin = false" class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>
+
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-[#059669]/10 text-[#059669] flex items-center justify-center font-bold text-xl mx-auto mb-3">
+                    LV
+                </div>
+                <h3 class="font-extrabold text-2xl">Bon retour !</h3>
+                <p class="text-sm text-base-content/70 mt-1">Connectez-vous à votre compte</p>
+            </div>
+
+            <div id="login-form-container">
+                <form class="space-y-4">
+                    {% csrf_token %}
+                    <div class="form-control w-full">
+                        <label class="label"><span class="label-text font-semibold">Téléphone</span></label>
+                        <input type="text" name="username" placeholder="ex: 70000000" required
+                               class="input input-bordered w-full focus:input-[#059669] rounded-xl" />
+                    </div>
+
+                    <div class="form-control w-full">
+                        <label class="label"><span class="label-text font-semibold">Mot de passe</span></label>
+                        <input type="password" name="password" placeholder="••••••••" required
+                               class="input input-bordered w-full focus:input-[#059669] rounded-xl" />
+                    </div>
+
+                    <button type="submit" class="btn bg-[#F97316] hover:bg-[#C2410C] text-white border-none w-full rounded-xl font-bold shadow-lg shadow-[#F97316]/20 mt-2">
+                        Se connecter
+                    </button>
+                </form>
+            </div>
+
+            <div class="divider my-6 text-xs text-base-content/40">NOUVEAU SUR LIVREZ-VOUS ?</div>
+
+            <div class="grid grid-cols-2 gap-3 text-center">
+                <a href="#" class="btn btn-outline border-base-300 btn-sm rounded-xl text-xs font-semibold">
+                    Espace Entreprise
+                </a>
+                <a href="#" class="btn btn-outline border-[#F97316] text-[#F97316] hover:bg-[#F97316] hover:border-[#F97316] hover:text-white btn-sm rounded-xl text-xs font-semibold">
+                    Devenir Livreur
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

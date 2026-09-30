@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" 
+      x-data="{ 
+          darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches) 
+      }"
+      :data-theme="darkMode ? 'dark' : 'light'"
+      class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Livrez-vous — La disparition du délai et du doute{% endblock %}</title>
+
+    <meta name="theme-color" content="#059669">
+    <meta name="description" content="Plateforme de livraison rapide au Burkina Faso. Trouvez un livreur certifié géolocalisé en quelques secondes.">
+
+    <link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
+    <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-screen bg-base-100 text-base-content flex flex-col font-sans antialiased selection:bg-secondary selection:text-white"
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+
+    {% if messages %}
+        <div class="fixed top-4 right-4 z-50 space-y-2 max-w-sm w-full px-4">
+            {% for message in messages %}
+                <div x-data="{ show: true }" 
+                     x-show="show" 
+                     x-init="setTimeout(() => show = false, 5000)"
+                     x-transition
+                     class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %} shadow-xl text-sm rounded-2xl flex justify-between items-center">
+                    <span>{{ message }}</span>
+                    <button @click="show = false" class="btn btn-xs btn-circle btn-ghost">✕</button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-base-200 border-t border-base-300 py-12 text-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 rounded-lg bg-[#059669] flex items-center justify-center text-white font-black text-base shadow-md">
+                            LV
+                        </div>
+                        <span class="font-bold text-lg tracking-tight">Livrez-vous<span class="text-[#F97316]">.</span></span>
+                    </div>
+                    <p class="text-xs text-base-content/70 leading-relaxed">
+                        Plateforme locale au Burkina Faso simplifiant la mise en relation immédiate entre livreurs certifiés et clients.
+                    </p>
+                </div>
+
+                <div>
+                    <p class="font-bold text-base-content mb-3 text-xs uppercase tracking-wider">Solutions</p>
+                    <ul class="space-y-2 text-xs text-base-content/70">
+                        <li><a href="#" class="hover:text-[#059669] transition-colors">Sociétés de Livraison</a></li>
+                        <li><a href="#" class="hover:text-[#059669] transition-colors">Postuler comme Livreur</a></li>
+                        <li><a href="#vision" class="hover:text-[#059669] transition-colors">Comment ça marche ?</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <p class="font-bold text-base-content mb-3 text-xs uppercase tracking-wider">Zone Actuelle</p>
+                    <div class="flex items-center gap-2 text-xs text-base-content/70">
+                        <span class="w-2 h-2 rounded-full bg-[#F97316]"></span>
+                        Zone pilote active (Ouagadougou)
+                    </div>
+                    <p class="text-xs text-base-content/50 mt-2">
+                        Couverture nocturne prioritaire (22h - 03h)
+                    </p>
+                </div>
+
+                <div>
+                    <p class="font-bold text-base-content mb-3 text-xs uppercase tracking-wider">Thème Visuel</p>
+                    <button @click="darkMode = !darkMode; localStorage.setItem('theme', darkMode ? 'dark' : 'light')" 
+                            class="btn btn-outline btn-xs rounded-xl flex items-center gap-2">
+                        <template x-if="!darkMode">
+                            <span class="flex items-center gap-1">🌙 Mode Sombre</span>
+                        </template>
+                        <template x-if="darkMode">
+                            <span class="flex items-center gap-1">☀ Mode Clair</span>
+                        </template>
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="pt-8 border-t border-base-300 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-base-content/50">
+                <p>© {% now "Y" %} Livrez-vous. Tous droits réservés.</p>
+                <p class="text-center sm:text-right">Conçu pour la fluidité terrain 🇧🇫</p>
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

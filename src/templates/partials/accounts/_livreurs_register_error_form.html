@@ -1,63 +1,17 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Devenir Livreur Certifié — Livrez-vous{% endblock %}
-
-{% block content %}
-<div class="min-h-screen bg-base-100 py-8 lg:py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <!-- Header Retour / Branding -->
-        <div class="mb-8 flex items-center justify-between">
-            <a href="{% url 'home_app:home-page' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-base-content/70 hover:text-[#059669] transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Retour à l'accueil
-            </a>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#059669]/10 border border-[#059669]/20 text-[#059669] text-xs font-bold">
-                <span class="w-2 h-2 rounded-full bg-[#059669] animate-ping"></span>
-                Inscriptions Ouvertes — Zone Ouagadougou
-            </div>
-        </div>
-        
-
-        <!-- GRILLE PRINCIPALE (Formulaire à gauche, Avantages à droite) -->
-        <div  class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-            
-            <!-- ========================================== -->
+  {% load static %}
+           <!-- ========================================== -->
             <!-- COLONNE GAUCHE : FORMULAIRE D'INSCRIPTION  -->
             <!-- ========================================== -->
-            <div id="form-container" class="lg:col-span-7  bg-base-100 rounded-3xl border border-base-200 p-6 sm:p-10 shadow-xl shadow-base-200/50">
-                
-                <div class="mb-8">
-                    <span class="text-[#F97316] font-bold text-xs uppercase tracking-wider">Rejoignez l'élite du terrain</span>
-                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mt-1">Créer mon profil livreur</h1>
-                    <p class="text-sm text-base-content/70 mt-2">
-                        Complétez le formulaire en 3 minutes. Vos documents seront vérifiés sous 24h.
-                    </p>
-                </div>
-
-                <!-- Affichage des erreurs globales du formulaire -->
-                {% if form.non_field_errors %}
-                    <div class="alert alert-error rounded-2xl mb-6 text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        <div>
-                            {% for error in form.non_field_errors %}
-                                <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
-            
+              
                 <form 
-                hx-post="{% url 'accounts_app:inscription-livreurs' %}" 
-                hx-target="#register-result-zone"
-                hx-indicator="#register-result-indic"
-                hx-on::before-request="this.querySelector('#register-result-indic').classList.remove('pointer-events-none')"
-                hx-on::after-request="this.querySelector('#register-result-indic').classList.add('pointer-events-none')"
-                enctype="multipart/form-data" 
-                class="relative h-full space-y-8">
+                    hx-post="{% url 'accounts_app:inscription-livreurs' %}" 
+                    hx-target="#register-result-zone"
+                    hx-indicator="#register-result-indic"
+                    hx-on::before-request="this.querySelector('#register-result-indic').classList.remove('pointer-events-none')"
+                    hx-on::after-request="this.querySelector('#register-result-indic').classList.add('pointer-events-none')"
+                    enctype="multipart/form-data" 
+                    class="relative h-full space-y-8"
+                            >
                     {% csrf_token %}
 
                     <!-- SECTION 1 : INFORMATIONS PERSONNELLES -->
@@ -71,26 +25,26 @@
                             <!-- Prénom -->
                             <div class="form-control w-full">
                                 <label class="label"><span class="label-text font-semibold">Prénom *</span></label>
-                                <input type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" required placeholder="ex: Abdoulaye"
-                                       class="input input-bordered w-full rounded-xl focus:border-[#059669] focus:ring-1 focus:ring-[#059669] {% if form.first_name.errors %}input-error{% endif %}" />
-                                {% if form.first_name.errors %}<span class="text-error text-xs mt-1">{{ form.first_name.errors.0 }}</span>{% endif %}
+                                <input type="text" name="first_name" value="{{ inscription_livreur_form_errors.first_name.value|default:'' }}" required placeholder="ex: Abdoulaye"
+                                       class="input input-bordered w-full rounded-xl focus:border-[#059669] focus:ring-1 focus:ring-[#059669] {% if inscription_livreur_form_errors.first_name.errors %}input-error{% endif %}" />
+                                {% if inscription_livreur_form_errors.first_name.errors %}<span class="text-error text-xs mt-1">{{ inscription_livreur_form_errors.first_name.errors.0 }}</span>{% endif %}
                             </div>
 
                             <!-- Nom -->
                             <div class="form-control w-full">
                                 <label class="label"><span class="label-text font-semibold">Nom *</span></label>
-                                <input type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" required placeholder="ex: Ouedraogo"
-                                       class="input input-bordered w-full rounded-xl focus:border-[#059669] focus:ring-1 focus:ring-[#059669] {% if form.last_name.errors %}input-error{% endif %}" />
-                                {% if form.last_name.errors %}<span class="text-error text-xs mt-1">{{ form.last_name.errors.0 }}</span>{% endif %}
+                                <input type="text" name="last_name" value="{{ inscription_livreur_form_errors.last_name.value|default:'' }}" required placeholder="ex: Ouedraogo"
+                                       class="input input-bordered w-full rounded-xl focus:border-[#059669] focus:ring-1 focus:ring-[#059669] {% if inscription_livreur_form_errors.last_name.errors %}input-error{% endif %}" />
+                                {% if inscription_livreur_form_errors.last_name.errors %}<span class="text-error text-xs mt-1">{{ inscription_livreur_form_errors.last_name.errors.0 }}</span>{% endif %}
                             </div>
                         </div>
 
                         <!-- Nom d'utilisateur -->
                         <div class="form-control w-full">
                             <label class="label"><span class="label-text font-semibold">Nom d'utilisateur *</span></label>
-                            <input type="text" name="username" value="{{ form.username.value|default:'' }}" required placeholder="ex: abdoulaye_o"
-                                   class="input input-bordered w-full rounded-xl focus:border-[#059669] focus:ring-1 focus:ring-[#059669] {% if form.username.errors %}input-error{% endif %}" />
-                            {% if form.username.errors %}<span class="text-error text-xs mt-1">{{ form.username.errors.0 }}</span>{% endif %}
+                            <input type="text" name="username" value="{{ inscription_livreur_form_errors.username.value|default:'' }}" required placeholder="ex: abdoulaye_o"
+                                   class="input input-bordered w-full rounded-xl focus:border-[#059669] focus:ring-1 focus:ring-[#059669] {% if inscription_livreur_form_errors.username.errors %}input-error{% endif %}" />
+                            {% if inscription_livreur_form_errors.username.errors %}<span class="text-error text-xs mt-1">{{ inscription_livreur_form_errors.username.errors.0 }}</span>{% endif %}
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -99,18 +53,18 @@
                                 <label class="label"><span class="label-text font-semibold">Numéro WhatsApp / Téléphone *</span></label>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-sm font-bold text-base-content/50">+226</span>
-                                    <input type="text" name="telephone" value="{{ form.telephone.value|default:'' }}" required placeholder="70 00 00 00"
-                                           class="input input-bordered w-full pl-14 rounded-xl focus:border-[#059669] focus:ring-1 focus:ring-[#059669] {% if form.telephone.errors %}input-error{% endif %}" />
+                                    <input type="text" name="telephone" value="{{ inscription_livreur_form_errors.telephone.value|default:'' }}" required placeholder="70 00 00 00"
+                                           class="input input-bordered w-full pl-14 rounded-xl focus:border-[#059669] focus:ring-1 focus:ring-[#059669] {% if inscription_livreur_form_errors.telephone.errors %}input-error{% endif %}" />
                                 </div>
-                                {% if form.telephone.errors %}<span class="text-error text-xs mt-1">{{ form.telephone.errors.0 }}</span>{% endif %}
+                                {% if inscription_livreur_form_errors.telephone.errors %}<span class="text-error text-xs mt-1">{{ inscription_livreur_form_errors.telephone.errors.0 }}</span>{% endif %}
                             </div>
 
                             <!-- Email -->
                             <div class="form-control w-full">
                                 <label class="label"><span class="label-text font-semibold">Email <span class="text-xs font-normal text-base-content/50">(Optionnel)</span></span></label>
-                                <input type="email" name="email" value="{{ form.email.value|default:'' }}" placeholder="nom@exemple.bf"
-                                       class="input input-bordered w-full rounded-xl focus:border-[#059669] focus:ring-1 focus:ring-[#059669] {% if form.email.errors %}input-error{% endif %}" />
-                                {% if form.email.errors %}<span class="text-error text-xs mt-1">{{ form.email.errors.0 }}</span>{% endif %}
+                                <input type="email" name="email" value="{{ inscription_livreur_form_errors.email.value|default:'' }}" placeholder="nom@exemple.bf"
+                                       class="input input-bordered w-full rounded-xl focus:border-[#059669] focus:ring-1 focus:ring-[#059669] {% if inscription_livreur_form_errors.email.errors %}input-error{% endif %}" />
+                                {% if inscription_livreur_form_errors.email.errors %}<span class="text-error text-xs mt-1">{{ inscription_livreur_form_errors.email.errors.0 }}</span>{% endif %}
                             </div>
                         </div>
 
@@ -120,13 +74,13 @@
                                 <label class="label"><span class="label-text font-semibold">Mot de passe *</span></label>
                                 <div class="relative">
                                     <input type="password" :type="showPassword ? 'text' : 'password'" name="password" required placeholder="••••••••"
-                                           class="input input-bordered w-full pr-12 rounded-xl focus:border-[#059669] focus:ring-1 focus:ring-[#059669] {% if form.password.errors %}input-error{% endif %}" />
+                                           class="input input-bordered w-full pr-12 rounded-xl focus:border-[#059669] focus:ring-1 focus:ring-[#059669] {% if inscription_livreur_form_errors.password.errors %}input-error{% endif %}" />
                                     <button type="button" @click="showPassword = !showPassword" :aria-label="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'" :aria-pressed="showPassword" class="absolute inset-y-0 right-0 flex items-center px-3 text-base-content/60 hover:text-base-content" title="Afficher ou masquer le mot de passe">
                                         <svg x-show="!showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                                         <svg x-show="showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18M10.584 10.587a2 2 0 002.829 2.829" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.88 5.09A10.94 10.94 0 0112 4.88c4.478 0 8.268 2.943 9.542 7a11.05 11.05 0 01-4.043 5.414M6.228 6.228A11.05 11.05 0 002.458 12c1.274 4.057 5.065 7 9.542 7 1.51 0 2.94-.35 4.207-.973" /></svg>
                                     </button>
                                 </div>
-                                {% if form.password.errors %}<span class="text-error text-xs mt-1">{{ form.password.errors.0 }}</span>{% endif %}
+                                {% if inscription_livreur_form_errors.password.errors %}<span class="text-error text-xs mt-1">{{ inscription_livreur_form_errors.password.errors.0 }}</span>{% endif %}
                             </div>
 
                             <!-- Confirmation -->
@@ -134,13 +88,13 @@
                                 <label class="label"><span class="label-text font-semibold">Confirmation *</span></label>
                                 <div class="relative">
                                     <input type="password" :type="showPassword ? 'text' : 'password'" name="confirm_password" required placeholder="••••••••"
-                                           class="input input-bordered w-full pr-12 rounded-xl focus:border-[#059669] focus:ring-1 focus:ring-[#059669] {% if form.confirm_password.errors %}input-error{% endif %}" />
+                                           class="input input-bordered w-full pr-12 rounded-xl focus:border-[#059669] focus:ring-1 focus:ring-[#059669] {% if inscription_livreur_form_errors.confirm_password.errors %}input-error{% endif %}" />
                                     <button type="button" @click="showPassword = !showPassword" :aria-label="showPassword ? 'Masquer la confirmation' : 'Afficher la confirmation'" :aria-pressed="showPassword" class="absolute inset-y-0 right-0 flex items-center px-3 text-base-content/60 hover:text-base-content" title="Afficher ou masquer la confirmation">
                                         <svg x-show="!showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                                         <svg x-show="showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18M10.584 10.587a2 2 0 002.829 2.829" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.88 5.09A10.94 10.94 0 0112 4.88c4.478 0 8.268 2.943 9.542 7a11.05 11.05 0 01-4.043 5.414M6.228 6.228A11.05 11.05 0 002.458 12c1.274 4.057 5.065 7 9.542 7 1.51 0 2.94-.35 4.207-.973" /></svg>
                                     </button>
                                 </div>
-                                {% if form.confirm_password.errors %}<span class="text-error text-xs mt-1">{{ form.confirm_password.errors.0 }}</span>{% endif %}
+                                {% if inscription_livreur_form_errors.confirm_password.errors %}<span class="text-error text-xs mt-1">{{ inscription_livreur_form_errors.confirm_password.errors.0 }}</span>{% endif %}
                             </div>
                         </div>
                     </div>
@@ -155,13 +109,13 @@
                         <div class="form-control w-full">
                             <label class="label"><span class="label-text font-semibold">Type de Véhicule *</span></label>
                             <div class="relative">
-                                <select name="type_vehicule" class="select select-bordered w-full rounded-xl focus:border-[#059669] focus:ring-1 focus:ring-[#059669] {% if form.type_vehicule.errors %}select-error{% endif %}">
-                                    {% for value, label in form.type_vehicule.field.choices %}
-                                        <option value="{{ value }}" {% if form.type_vehicule.value == value %}selected{% endif %}>{{ label }}</option>
+                                <select name="type_vehicule" class="select select-bordered w-full rounded-xl focus:border-[#059669] focus:ring-1 focus:ring-[#059669] {% if inscription_livreur_form_errors.type_vehicule.errors %}select-error{% endif %}">
+                                    {% for value, label in inscription_livreur_form_errors.type_vehicule.field.choices %}
+                                        <option value="{{ value }}" {% if inscription_livreur_form_errors.type_vehicule.value == value %}selected{% endif %}>{{ label }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
-                            {% if form.type_vehicule.errors %}<span class="text-error text-xs mt-1">{{ form.type_vehicule.errors.0 }}</span>{% endif %}
+                            {% if inscription_livreur_form_errors.type_vehicule.errors %}<span class="text-error text-xs mt-1">{{ inscription_livreur_form_errors.type_vehicule.errors.0 }}</span>{% endif %}
                         </div>
                     </div>
 
@@ -192,7 +146,7 @@
                                        @change="photoProfil = URL.createObjectURL($event.target.files[0])"
                                        class="file-input file-input-bordered file-input-sm w-full rounded-xl file-input-primary" />
                             </div>
-                            {% if form.photo_profil.errors %}<span class="text-error text-xs mt-1">{{ form.photo_profil.errors.0 }}</span>{% endif %}
+                            {% if inscription_livreur_form_errors.photo_profil.errors %}<span class="text-error text-xs mt-1">{{ inscription_livreur_form_errors.photo_profil.errors.0 }}</span>{% endif %}
                         </div>
 
                         <!-- CNI Recto & Verso Grid -->
@@ -214,7 +168,7 @@
                                            @change="cniRecto = URL.createObjectURL($event.target.files[0])"
                                            class="file-input file-input-ghost file-input-xs w-full" />
                                 </div>
-                                {% if form.photo_cni_recto.errors %}<span class="text-error text-xs mt-1">{{ form.photo_cni_recto.errors.0 }}</span>{% endif %}
+                                {% if inscription_livreur_form_errors.photo_cni_recto.errors %}<span class="text-error text-xs mt-1">{{ inscription_livreur_form_errors.photo_cni_recto.errors.0 }}</span>{% endif %}
                             </div>
 
                             <!-- CNI Verso -->
@@ -234,7 +188,7 @@
                                            @change="cniVerso = URL.createObjectURL($event.target.files[0])"
                                            class="file-input file-input-ghost file-input-xs w-full" />
                                 </div>
-                                {% if form.photo_cni_verso.errors %}<span class="text-error text-xs mt-1">{{ form.photo_cni_verso.errors.0 }}</span>{% endif %}
+                                {% if inscription_livreur_form_errors.photo_cni_verso.errors %}<span class="text-error text-xs mt-1">{{ inscription_livreur_form_errors.photo_cni_verso.errors.0 }}</span>{% endif %}
                             </div>
                         </div>
 
@@ -256,11 +210,11 @@
                                        @change="photoSelfie = URL.createObjectURL($event.target.files[0])"
                                        class="file-input file-input-bordered file-input-sm w-full rounded-xl mt-2" />
                             </div>
-                            {% if form.photo_selfie.errors %}<span class="text-error text-xs mt-1">{{ form.photo_selfie.errors.0 }}</span>{% endif %}
+                            {% if inscription_livreur_form_errors.photo_selfie.errors %}<span class="text-error text-xs mt-1">{{ inscription_livreur_form_errors.photo_selfie.errors.0 }}</span>{% endif %}
                         </div>
 
                     </div>
-                    <!-- Indicateur de chargement HTMX -->
+                      <!-- Overlay de chargement HTMX (Loading Indicator) -->
                     <div id="register-result-indic" class="htmx-indicator pointer-events-none absolute inset-0 z-50 flex items-center justify-center rounded-2xl border border-base-300 bg-base-100/90 p-6 text-center backdrop-blur-sm transition-opacity" role="status" aria-live="polite" aria-atomic="true">
                         <div class="flex flex-col items-center gap-3">
                             <span class="loading loading-spinner loading-lg text-[#059669]" aria-hidden="true"></span>
@@ -278,114 +232,5 @@
                             En vous inscrivant, vous acceptez la charte de qualité et de sécurité Livrez-vous.
                         </p>
                     </div>
-
                 </form>
-                <!-- Conteneur de retour HTMX -->
-                <div id="register-result-zone" class="mb-4"></div>
-            </div>
-            
-            <!-- ========================================== -->
-            <!-- COLONNE DROITE : AVANTAGES & VALEUR AJOUTÉE -->
-            <!-- ========================================== -->
-            <div class="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
-                
-                <!-- Carte "Pourquoi rouler avec nous" -->
-                <div class="bg-gradient-to-br from-[#059669] to-[#047857] rounded-3xl p-6 sm:p-8 text-white shadow-2xl relative overflow-hidden">
-                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
-                    
-                    <span class="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold uppercase tracking-wider inline-block mb-4">
-                        0 FCFA de Commission
-                    </span>
-
-                    <h2 class="text-2xl sm:text-3xl font-extrabold leading-tight">
-                        Prenez 100% de vos gains sur chaque course.
-                    </h2>
-
-                    <p class="mt-3 text-white/80 text-sm leading-relaxed">
-                        Fini les plateformes qui prélèvent 20% à 30% de votre travail. Avec Livrez-vous, votre argent reste votre argent.
-                    </p>
-
-                    <!-- Stats rapides -->
-                    <div class="grid grid-cols-2 gap-4 mt-6 pt-6 border-t border-white/20">
-                        <div>
-                            <p class="text-2xl font-black text-[#FFEDD5]">&lt; 24h</p>
-                            <p class="text-xs text-white/70">Validation express du compte</p>
-                        </div>
-                        <div>
-                            <p class="text-2xl font-black text-[#FFEDD5]">100%</p>
-                            <p class="text-xs text-white/70">Autonomie sur vos horaires</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Liste des avantages uniques -->
-                <div class="bg-base-100 rounded-3xl border border-base-200 p-6 sm:p-8 space-y-5 shadow-sm">
-                    <h3 class="font-bold text-lg text-base-content flex items-center gap-2">
-                        <span class="text-[#F97316]">✨</span> Ce qui change la donne pour vous
-                    </h3>
-
-                    <div class="space-y-4">
-                        <div class="flex items-start gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[#059669]/10 text-[#059669] flex items-center justify-center font-bold shrink-0">
-                                🌙
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-sm">Le créneau de nuit ultra-rentable</h4>
-                                <p class="text-xs text-base-content/70 mt-0.5">
-                                    De 22h à 03h, la demande explose à Ouagadougou. Soyez le livreur incontournable de votre quartier.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[#F97316]/10 text-[#F97316] flex items-center justify-center font-bold shrink-0">
-                                📍
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-sm">Courses de proximité</h4>
-                                <p class="text-xs text-base-content/70 mt-0.5">
-                                    Recevez des commandes directement dans votre zone géographique pour éviter les trajets à vide.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-[#059669]/10 text-[#059669] flex items-center justify-center font-bold shrink-0">
-                                🛡️
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-sm">Badge Livreur Vérifié</h4>
-                                <p class="text-xs text-base-content/70 mt-0.5">
-                                    Un badge officiel sur votre profil pour inspirer confiance aux clients et sociétés de la place.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Témoignage / Social Proof -->
-                <div class="bg-base-200/60 rounded-3xl p-6 border border-base-300">
-                    <div class="flex items-center gap-1 text-[#F97316] text-sm mb-2">
-                        ★★★★★
-                    </div>
-                    <p class="text-xs italic text-base-content/80 leading-relaxed">
-                        "Avant je cherchais des clients pendant des heures sur Facebook. Maintenant j'active mon statut 'Disponible' à Zone 1 et les demandes tombent directement."
-                    </p>
-                    <div class="flex items-center gap-3 mt-4">
-                        <div class="w-9 h-9 rounded-full bg-[#059669] text-white font-bold flex items-center justify-center text-xs">
-                            SK
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold">Souleymane K.</p>
-                            <p class="text-[10px] text-base-content/60">Livreur Moto — Ouagadougou</p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-</div>
-{% endblock %}
+                 {% include 'partials/accounts/_livreurs_register_result.html' with success=False Title="Inscription échouée" message="Une erreur est survenue lors de l'inscription. Veuillez vérifier les informations fournies et réessayer." %}

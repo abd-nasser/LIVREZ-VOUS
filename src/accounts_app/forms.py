@@ -59,6 +59,7 @@ class InscriptionLivreurForm(forms.ModelForm):
     confirm_password = forms.CharField(widget=forms.PasswordInput, label="Confirmation")
 
     # Champs spécifiques à l'utilisateur
+    username = forms.CharField(max_length=30, label="Nom d'utilisateur")
     first_name = forms.CharField(max_length=30, label="Prénom")
     last_name = forms.CharField(max_length=30, label="Nom")
     telephone = forms.CharField(max_length=20, label="Numéro de téléphone")
@@ -91,6 +92,7 @@ class InscriptionLivreurForm(forms.ModelForm):
     def save(self, commit=True):
         # 1. Création du compte utilisateur de base
         user = User.objects.create_user(
+            username=self.cleaned_data['username'],  # Utilisation du téléphone comme nom d'utilisateur
             telephone=self.cleaned_data['telephone'],
             first_name=self.cleaned_data['first_name'],
             last_name=self.cleaned_data['last_name'],

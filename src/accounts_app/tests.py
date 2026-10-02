@@ -25,6 +25,7 @@ class LoginViewTests(TestCase):
 		self.assertEqual(response.status_code, 200)
 		self.assertIn('_auth_user_id', self.client.session)
 		self.assertContains(response, 'Bienvenue Test')
+		self.assertEqual(response['HX-Trigger'], 'login-success')
 
 	def test_login_with_username(self):
 		response = self.client.post(self.url, {
@@ -47,6 +48,8 @@ class LoginViewTests(TestCase):
 		self.assertEqual(response.status_code, 200)
 		self.assertNotIn('_auth_user_id', self.client.session)
 		self.assertContains(response, 'Identifiant ou mot de passe incorrect.')
+		self.assertEqual(response['HX-Retarget'], '#login-message')
+		self.assertEqual(response['HX-Reswap'], 'innerHTML')
 
 	def test_logout_clears_session(self):
 		self.client.force_login(self.user)

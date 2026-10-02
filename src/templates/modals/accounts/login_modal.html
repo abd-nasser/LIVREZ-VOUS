@@ -1,10 +1,14 @@
-  <div x-data="{ loginMethod: 'telephone' }"
+    {% load static %}
+    <div x-data="{ loginMethod: 'telephone' }"
       x-show="openLogin"
          x-transition.opacity
          class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
          style="display: none;">
         
         <div @click.away="openLogin = false" class="bg-base-100 w-full max-w-md rounded-3xl border border-base-300 p-6 sm:p-8 shadow-2xl relative">
+            <div id="login-loading" class="htmx-indicator pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-3xl bg-base-100/80" role="status" aria-live="polite">
+                <img src="{% static 'images/loading.svg' %}" alt="Connexion en cours" class="h-45 w-45" />
+            </div>
             
             <button @click="openLogin = false" class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>
 
@@ -15,10 +19,11 @@
                 <h3 class="font-extrabold text-2xl">Bon retour !</h3>
                 <p class="text-sm text-base-content/70 mt-1">Connectez-vous à votre compte</p>
             </div>
-            <div id="login-message-zone"></div>
+            
             <div id="login-form-container">
                 <form hx-post="{% url 'accounts_app:login' %}"
                       hx-target="#login-message-zone"
+                        hx-indicator="#login-loading"
                       class="space-y-4">
                     {% csrf_token %}
                     <input type="hidden" name="login_method" x-model="loginMethod">

@@ -53,6 +53,7 @@
                 <form 
                 hx-post="{% url 'accounts_app:inscription-livreurs' %}" 
                 hx-target="#register-result-zone"
+                hx-encoding="multipart/form-data"
                 hx-indicator="#register-result-indic"
                 hx-on::before-request="this.querySelector('#register-result-indic').classList.remove('pointer-events-none')"
                 hx-on::after-request="this.querySelector('#register-result-indic').classList.add('pointer-events-none')"
@@ -263,12 +264,12 @@
                     <!-- Indicateur de chargement HTMX -->
                     <div id="register-result-indic" class="htmx-indicator pointer-events-none absolute inset-0 z-50 flex items-center justify-center rounded-2xl border border-base-300 bg-base-100/90 p-6 text-center backdrop-blur-sm transition-opacity" role="status" aria-live="polite" aria-atomic="true">
                         <div class="flex flex-col items-center gap-3">
-                            <span class="loading loading-spinner loading-lg text-[#059669]" aria-hidden="true"></span>
+                            <img src="{% static 'images/loading.svg' %}" alt="Loading..." class="w-45 h-45" />
                             <p class="font-bold text-base-content">Envoi de votre candidature...</p>
                             <p class="text-sm text-base-content/70">Vos informations et documents sont en cours de traitement.</p>
                         </div>
                     </div>
-
+                    <div id="register-result-zone" class="mb-4"></div>
                     <!-- SUBMIT BUTTON -->
                     <div class="pt-4">
                         <button type="submit" class="btn bg-[#F97316] hover:bg-[#C2410C] text-white border-none w-full btn-lg rounded-2xl font-bold shadow-xl shadow-[#F97316]/25 transition-all transform active:scale-95">
@@ -281,7 +282,7 @@
 
                 </form>
                 <!-- Conteneur de retour HTMX -->
-                <div id="register-result-zone" class="mb-4"></div>
+                
             </div>
             
             <!-- ========================================== -->
@@ -388,4 +389,27 @@
 
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('livreur-register-success', () => {
+            const zone = document.getElementById('register-result-zone');
+
+            if (!zone || !window.Alpine || !window.gsap) return;
+
+            Alpine.nextTick(() => {
+                gsap.fromTo(zone,
+                    { y: -32, autoAlpha: 0, scale: 0.9 },
+                    {
+                        y: 0,
+                        autoAlpha: 1,
+                        scale: 1,
+                        duration: 0.85,
+                        ease: 'bounce.out',
+                        clearProps: 'transform,opacity,visibility',
+                    }
+                );
+            });
+        });
+    });
+</script>
 {% endblock %}

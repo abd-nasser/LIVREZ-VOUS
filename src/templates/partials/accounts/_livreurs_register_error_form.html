@@ -6,6 +6,7 @@
                 <form 
                     hx-post="{% url 'accounts_app:inscription-livreurs' %}" 
                     hx-target="#register-result-zone"
+                    hx-encoding="multipart/form-data"
                     hx-indicator="#register-result-indic"
                     hx-on::before-request="this.querySelector('#register-result-indic').classList.remove('pointer-events-none')"
                     hx-on::after-request="this.querySelector('#register-result-indic').classList.add('pointer-events-none')"
@@ -222,6 +223,7 @@
                             <p class="text-sm text-base-content/70">Vos informations et documents sont en cours de traitement.</p>
                         </div>
                     </div>
+                    <div id="register-result-zone" class="mb-4"></div>
 
                     <!-- SUBMIT BUTTON -->
                     <div class="pt-4">

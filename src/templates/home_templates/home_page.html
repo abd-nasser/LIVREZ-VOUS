@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
 
+{% comment %}
+{% endcomment %}
+    
 {% block content %}
-<div x-data="{ openLogin: false, activeTab: 'clients' }"
-    @login-success.window="openLogin = false"
+<div x-data="{ openLogin: false, loginSucceeded: false, activeTab: 'clients' }"
+    @login-success.window="openLogin = false; loginSucceeded = true"
     class="min-h-screen bg-base-100 text-base-content font-sans antialiased">
 
     <header class="sticky top-0 z-40 bg-base-100/80 backdrop-blur-md border-b border-base-200">
@@ -55,6 +58,8 @@
                     Lancement Quartier Pilote — 1er Mois Gratuit (20 premières structures)
                 </div>
 
+                <div x-show="loginSucceeded" id="login-message-zone" aria-live="polite"></div>
+
                 <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight">
                     Trouvez un livreur en quelques secondes. <span class="text-[#059669]">Fini le doute.</span>
                 </h1>
@@ -62,6 +67,8 @@
                 <p class="mt-6 text-lg sm:text-xl text-base-content/70 leading-relaxed">
                     Plus besoin d'attendre des heures sur WhatsApp à 22h. Une communauté de livreurs vérifiés et géolocalisés à votre service dans votre quartier.
                 </p>
+
+                    
 
                 <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                     <a href="#" class="btn bg-[#F97316] hover:bg-[#C2410C] text-white border-none btn-lg rounded-2xl w-full sm:w-auto shadow-xl shadow-[#F97316]/20 font-bold">
@@ -180,3 +187,30 @@
 
 </div>
 {% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('login-success', () => {
+            const zone = document.getElementById('login-message-zone');
+
+            if (!zone || !window.Alpine || !window.gsap) return;
+
+            Alpine.nextTick(() => {
+                gsap.fromTo(zone,
+                    { y: -32, autoAlpha: 0, scale: 0.9 },
+                    {
+                        y: 0,
+                        autoAlpha: 1,
+                        scale: 1,
+                        duration: 0.85,
+                        ease: 'bounce.out',
+                        clearProps: 'transform,opacity,visibility',
+                    }
+                );
+            });
+        });
+    });
+</script>
+{% endblock %}
+ 

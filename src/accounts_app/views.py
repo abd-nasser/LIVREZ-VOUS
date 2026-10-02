@@ -17,15 +17,16 @@ class CreateLivreurView(CreateView):
     model = Livreur
     template_name = 'accounts_templates/livreurs_register.html'
     
-   
-
     def form_valid(self, form):
+        form.save()  # Sauvegarde le formulaire et crée l'utilisateur + le profil Livreur
         # En cas de SUCCÈS : HTMX remplace le conteneur global par le toast de succès
-        return render(self.request, 'partials/accounts/_livreurs_register_result.html', {
+        response = render(self.request, 'partials/accounts/_livreurs_register_result.html', {
             'success': True,
             'Title': "Bienvenue",
             'message': "Félicitations, vous faites désormais partie de la plus grande communauté de livreurs !"
         })
+        response['HX-Trigger'] = 'livreur-register-success'
+        return response
 
     def form_invalid(self, form):
         # En cas d'ERREUR : On renvoie le formulaire avec ses erreurs
@@ -53,10 +54,13 @@ def login_view(request):
         user = authenticate(request, username=user_record.telephone, password=request.POST.get('password', ''))
 
     if user is None:
-        return render(request, 'partials/accounts/_login_message.html', {
+        response = render(request, 'partials/accounts/_login_message.html', {
             'success': False,
             'message': "Identifiant ou mot de passe incorrect.",
         })
+        response['HX-Retarget'] = '#login-message'
+        response['HX-Reswap'] = 'innerHTML'
+        return response
 
     login(request, user)
     response = render(request, 'partials/accounts/_login_message.html', {

@@ -1,0 +1,77 @@
+  <div x-data="{ loginMethod: 'telephone' }"
+      x-show="openLogin"
+         x-transition.opacity
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+         style="display: none;">
+        
+        <div @click.away="openLogin = false" class="bg-base-100 w-full max-w-md rounded-3xl border border-base-300 p-6 sm:p-8 shadow-2xl relative">
+            
+            <button @click="openLogin = false" class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>
+
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-[#059669]/10 text-[#059669] flex items-center justify-center font-bold text-xl mx-auto mb-3">
+                    LV
+                </div>
+                <h3 class="font-extrabold text-2xl">Bon retour !</h3>
+                <p class="text-sm text-base-content/70 mt-1">Connectez-vous à votre compte</p>
+            </div>
+            <div id="login-message-zone"></div>
+            <div id="login-form-container">
+                <form hx-post="{% url 'accounts_app:login' %}"
+                      hx-target="#login-message-zone"
+                      class="space-y-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="login_method" x-model="loginMethod">
+                    <div class="join grid grid-cols-2 w-full" role="group" aria-label="Mode de connexion">
+                        <button type="button" @click="loginMethod = 'telephone'"
+                                :class="loginMethod === 'telephone' ? 'btn-active bg-[#059669] text-white' : 'bg-base-200'"
+                                class="btn join-item rounded-l-xl">Téléphone</button>
+                        <button type="button" @click="loginMethod = 'username'"
+                                :class="loginMethod === 'username' ? 'btn-active bg-[#059669] text-white' : 'bg-base-200'"
+                                class="btn join-item rounded-r-xl">Nom d'utilisateur</button>
+                    </div>
+                    <div class="form-control w-full">
+                        <label class="label" for="login-telephone" x-show="loginMethod === 'telephone'"><span class="label-text font-semibold">Téléphone</span></label>
+                        <input x-show="loginMethod === 'telephone'" id="login-telephone" type="text" name="telephone" placeholder="ex: 70000000" :required="loginMethod === 'telephone'" :disabled="loginMethod !== 'telephone'"
+                               class="input input-bordered w-full focus:input-[#059669] rounded-xl" />
+                        <label class="label" for="login-username" x-show="loginMethod === 'username'"><span class="label-text font-semibold">Nom d'utilisateur</span></label>
+                        <input x-show="loginMethod === 'username'" id="login-username" type="text" name="username" placeholder="Votre nom d'utilisateur" :required="loginMethod === 'username'" :disabled="loginMethod !== 'username'"
+                               class="input input-bordered w-full focus:input-[#059669] rounded-xl" />
+                    </div>
+
+                    <div x-data="{ showPassword: false }" class="form-control w-full">
+                        <label class="label"><span class="label-text font-semibold">Mot de passe</span></label>
+                        <div class="relative">
+                            <input :type="showPassword ? 'text' : 'password'" name="password" placeholder="••••••••" required
+                                   class="input input-bordered w-full pr-12 focus:input-[#059669] rounded-xl" />
+                            <button type="button"
+                                    @click="showPassword = !showPassword"
+                                    :aria-label="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+                                    :aria-pressed="showPassword"
+                                    class="absolute inset-y-0 right-0 flex items-center px-3 text-base-content/60 hover:text-base-content"
+                                    title="Afficher ou masquer le mot de passe">
+                                <svg x-show="!showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                <svg x-show="showPassword" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18M10.584 10.587a2 2 0 002.829 2.829" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.88 5.09A10.94 10.94 0 0112 4.88c4.478 0 8.268 2.943 9.542 7a11.05 11.05 0 01-4.043 5.414M6.228 6.228A11.05 11.05 0 012.458 12c1.274 4.057 5.065 7 9.542 7 1.51 0 2.94-.35 4.207-.973" /></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn bg-[#F97316] hover:bg-[#C2410C] text-white border-none w-full rounded-xl font-bold shadow-lg shadow-[#F97316]/20 mt-2">
+                        Se connecter
+                    </button>
+                </form>
+                <div id="login-message" class="mt-3" aria-live="polite"></div>
+            </div>
+
+            <div class="divider my-6 text-xs text-base-content/40">NOUVEAU SUR LIVREZ-VOUS ?</div>
+
+            <div class="grid grid-cols-2 gap-3 text-center">
+                <a href="#" class="btn btn-outline border-base-300 btn-sm rounded-xl text-xs font-semibold">
+                    Espace Entreprise
+                </a>
+                <a href="{% url 'accounts_app:inscription-livreurs' %}" class="btn btn-outline border-[#F97316] text-[#F97316] hover:bg-[#F97316] hover:border-[#F97316] hover:text-white btn-sm rounded-xl text-xs font-semibold">
+                    Devenir Livreur
+                </a>
+            </div>
+        </div>
+    </div>

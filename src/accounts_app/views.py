@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout as auth_logout
+from django.http import HttpResponseNotAllowed
+from django.shortcuts import redirect, render
 from django.views.generic import CreateView
-from django.urls import reverse_lazy
-from django.contrib import messages
 from livreurs_app.models import Livreur
+from .models import User
 
 
 from .forms import (InscriptionEntrepriseForm, 
@@ -35,3 +36,41 @@ class CreateLivreurView(CreateView):
         response['HX-Retarget'] = '#form-container'
         response['HX-Reswap'] = 'innerHTML'
         return response
+    
+
+def login_view(request):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    login_method = request.POST.get('login_method')
+    identifier = request.POST.get(login_method, '').strip() if login_method in {'username', 'telephone'} else ''
+    user_record = None
+    if identifier:
+        user_record = User.objects.filter(**{login_method: identifier}).first()
+
+    user = None
+    if user_record:
+        user = authenticate(request, username=user_record.telephone, password=request.POST.get('password', ''))
+
+    if user is None:
+        return render(request, 'partials/accounts/_login_message.html', {
+            'success': False,
+            'message': "Identifiant ou mot de passe incorrect.",
+        })
+
+    login(request, user)
+    response = render(request, 'partials/accounts/_login_message.html', {
+        'success': True,
+        'message': f"Bienvenue {user.first_name} !",
+        'reload_on_close' :True,
+    })
+    response['HX-Trigger'] = 'login-success'
+    return response
+
+
+def logout_view(request):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    auth_logout(request)
+    return redirect('home_app:home-page')

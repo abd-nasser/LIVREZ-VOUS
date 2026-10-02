@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div x-data="{ openLogin: false, activeTab: 'clients' }" class="min-h-screen bg-base-100 text-base-content font-sans antialiased">
+<div x-data="{ openLogin: false, activeTab: 'clients' }"
+    @login-success.window="openLogin = false"
+    class="min-h-screen bg-base-100 text-base-content font-sans antialiased">
 
     <header class="sticky top-0 z-40 bg-base-100/80 backdrop-blur-md border-b border-base-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -18,12 +20,25 @@
                     <a href="#" class="hover:text-[#059669] transition-colors">Entreprises de livraison</a>
                     <a href="{% url 'accounts_app:inscription-livreurs' %}" class="hover:text-[#059669] transition-colors">Devenir Livreur</a>
                 </nav>
-
-                <div class="flex items-center space-x-3">
+                
+                {% if user.is_authenticated %}
+                <div class="flex items-center gap-3">
+                    <a class="btn bg-[#059669] hover:bg-[#047857] text-white btn-sm sm:btn-md rounded-xl border-none shadow-md shadow-[#059669]/20"
+                       href="#">Mon espace</a>
+                    <form method="post" action="{% url 'accounts_app:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline btn-sm sm:btn-md rounded-xl">Déconnexion</button>
+                    </form>
+                </div>
+                {% else %}
+                 <div class="flex items-center space-x-3">
                     <button @click="openLogin = true" class="btn bg-[#059669] hover:bg-[#047857] text-white btn-sm sm:btn-md rounded-xl border-none shadow-md shadow-[#059669]/20">
                         Se connecter
                     </button>
                 </div>
+                {% endif %}
+                    
+               
             </div>
         </div>
     </header>
@@ -161,56 +176,7 @@
         </div>
     </section>
 
-    <div x-show="openLogin" 
-         x-transition.opacity
-         class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-         style="display: none;">
-        
-        <div @click.away="openLogin = false" class="bg-base-100 w-full max-w-md rounded-3xl border border-base-300 p-6 sm:p-8 shadow-2xl relative">
-            
-            <button @click="openLogin = false" class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>
-
-            <div class="text-center mb-6">
-                <div class="w-12 h-12 rounded-2xl bg-[#059669]/10 text-[#059669] flex items-center justify-center font-bold text-xl mx-auto mb-3">
-                    LV
-                </div>
-                <h3 class="font-extrabold text-2xl">Bon retour !</h3>
-                <p class="text-sm text-base-content/70 mt-1">Connectez-vous à votre compte</p>
-            </div>
-
-            <div id="login-form-container">
-                <form class="space-y-4">
-                    {% csrf_token %}
-                    <div class="form-control w-full">
-                        <label class="label"><span class="label-text font-semibold">Téléphone</span></label>
-                        <input type="text" name="username" placeholder="ex: 70000000" required
-                               class="input input-bordered w-full focus:input-[#059669] rounded-xl" />
-                    </div>
-
-                    <div class="form-control w-full">
-                        <label class="label"><span class="label-text font-semibold">Mot de passe</span></label>
-                        <input type="password" name="password" placeholder="••••••••" required
-                               class="input input-bordered w-full focus:input-[#059669] rounded-xl" />
-                    </div>
-
-                    <button type="submit" class="btn bg-[#F97316] hover:bg-[#C2410C] text-white border-none w-full rounded-xl font-bold shadow-lg shadow-[#F97316]/20 mt-2">
-                        Se connecter
-                    </button>
-                </form>
-            </div>
-
-            <div class="divider my-6 text-xs text-base-content/40">NOUVEAU SUR LIVREZ-VOUS ?</div>
-
-            <div class="grid grid-cols-2 gap-3 text-center">
-                <a href="#" class="btn btn-outline border-base-300 btn-sm rounded-xl text-xs font-semibold">
-                    Espace Entreprise
-                </a>
-                <a href="{% url 'accounts_app:inscription-livreurs' %}" class="btn btn-outline border-[#F97316] text-[#F97316] hover:bg-[#F97316] hover:border-[#F97316] hover:text-white btn-sm rounded-xl text-xs font-semibold">
-                    Devenir Livreur
-                </a>
-            </div>
-        </div>
-    </div>
+    {% include 'modals/accounts/login_modal.html' %}
 
 </div>
 {% endblock %}

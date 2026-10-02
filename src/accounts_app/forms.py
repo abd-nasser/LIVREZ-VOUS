@@ -81,6 +81,12 @@ class InscriptionLivreurForm(forms.ModelForm):
             raise forms.ValidationError("Ce numéro de téléphone est déjà utilisé.")
         return telephone
 
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("Ce nom d'utilisateur est déjà utilisé.")
+        return username
+
     def clean_confirm_password(self):
         password = self.cleaned_data.get('password')
         confirm_password = self.cleaned_data.get('confirm_password')

@@ -1,0 +1,76 @@
+<div x-data="{ 
+        show: true, 
+        reloadOnClose: {{ reload_on_close|yesno:'true,false' }},
+        duration: 3500,
+        init() {
+            setTimeout(() => { 
+                this.close();
+            }, this.duration);
+        },
+        close() {
+            this.show = false;
+            if (this.reloadOnClose) {
+                setTimeout(() => window.location.reload(), 300);
+            }
+        }
+     }"
+     x-show="show"
+     x-transition:enter="transition ease-out duration-300 transform"
+     x-transition:enter-start="translate-y-2 opacity-0 scale-95"
+     x-transition:enter-end="translate-y-0 opacity-100 scale-100"
+     x-transition:leave="transition ease-in duration-200 transform"
+     x-transition:leave-start="translate-y-0 opacity-100 scale-100"
+     x-transition:leave-end="translate-y-2 opacity-0 scale-95"
+     class="relative overflow-hidden rounded-2xl border p-4 shadow-xl backdrop-blur-md transition-all group
+            {% if success %}
+                bg-emerald-500/10 border-emerald-500/20 text-emerald-950 dark:text-emerald-100
+            {% else %}
+                bg-rose-500/10 border-rose-500/20 text-rose-950 dark:text-rose-100
+            {% endif %}"
+     role="status">
+
+    <div class="flex items-center justify-between gap-3 relative z-10">
+        <!-- Icône + Message -->
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm
+                        {% if success %} bg-[#059669] text-white {% else %} bg-[#F97316] text-white {% endif %}">
+                {% if success %}
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                    </svg>
+                {% else %}
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                {% endif %}
+            </div>
+
+            <span class="text-sm font-semibold leading-snug">
+                {{ message }}
+            </span>
+        </div>
+
+        <!-- Bouton Fermer -->
+        <button type="button"
+                @click="close()"
+                class="btn btn-xs btn-circle btn-ghost opacity-60 hover:opacity-100 transition-opacity"
+                aria-label="Fermer le message">
+            ✕
+        </button>
+    </div>
+
+    <!-- Barre de progression fluide (Timer visuel) -->
+    <div class="absolute bottom-0 left-0 right-0 h-1 bg-base-content/10 overflow-hidden">
+        <div class="h-full w-full origin-left transition-transform ease-linear
+                    {% if success %} bg-[#059669] {% else %} bg-[#F97316] {% endif %}"
+             :style="`animation: shrink ${duration}ms linear forwards;`">
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes shrink {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+}
+</style>

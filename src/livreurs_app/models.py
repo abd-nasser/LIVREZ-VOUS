@@ -27,6 +27,7 @@ class Livreur(models.Model):
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
     note_moyenne = models.DecimalField(max_digits=3, decimal_places=2, default=0)
+    favoris_de = models.ManyToManyField(User, related_name='livreurs_favoris', blank=True)
     nb_livraisons = models.PositiveIntegerField(default=0)
 
     # Vérification identité
@@ -48,7 +49,11 @@ class Livreur(models.Model):
     def __str__(self):
         return f"{self.user.get_full_name()} — {self.get_type_vehicule_display()}"
 
- 
+    def get_absolute_url(self):
+        return reverse('livreurs_app:livreur-profil', kwargs={'pk': self.pk})
+    
+    def moyen_de_transport(self):
+        return self.get_type_vehicule_display()
     
 class PositionLivreur(models.Model):
     """Historique de position — à purger périodiquement (voir note plus bas)"""

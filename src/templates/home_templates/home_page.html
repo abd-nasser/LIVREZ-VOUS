@@ -1,7 +1,5 @@
 {% extends 'base.html' %}
 
-{% comment %}
-{% endcomment %}
     
 {% block content %}
 <div x-data="{ openLogin: false, loginSucceeded: false, activeTab: 'clients' }"
@@ -27,7 +25,7 @@
                 {% if user.is_authenticated %}
                 <div class="flex items-center gap-3">
                     <a class="btn bg-[#059669] hover:bg-[#047857] text-white btn-sm sm:btn-md rounded-xl border-none shadow-md shadow-[#059669]/20"
-                       href="#">Mon espace</a>
+                       href="{% url 'livreurs_app:livreur-profil' user.livreur_profil.pk %}">Mon espace</a>
                     <form method="post" action="{% url 'accounts_app:logout' %}">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-outline btn-sm sm:btn-md rounded-xl">Déconnexion</button>
@@ -71,6 +69,9 @@
                     
 
                 <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="{% url 'accounts_app:inscription-clients' %}" class="btn bg-[#059669] hover:bg-[#047857] text-white border-none btn-lg rounded-2xl w-full sm:w-auto shadow-xl shadow-[#059669]/20 font-bold">
+                        Créer un compte client
+                    </a>
                     <a href="#" class="btn bg-[#F97316] hover:bg-[#C2410C] text-white border-none btn-lg rounded-2xl w-full sm:w-auto shadow-xl shadow-[#F97316]/20 font-bold">
                         Inscrire mon entreprise
                     </a>
@@ -142,6 +143,14 @@
                     <h3 class="font-bold text-lg mb-2">Suivi en direct</h3>
                     <p class="text-sm text-base-content/70">Suivez la progression de votre colis en temps réel sur la carte.</p>
                 </div>
+            </div>
+
+            <div x-show="activeTab === 'clients'" x-transition.opacity class="max-w-5xl mx-auto mt-8 rounded-2xl border border-[#059669]/20 bg-base-100 p-6 sm:p-8 text-center shadow-sm">
+                <h3 class="text-xl font-bold">Prêt à envoyer votre premier colis ?</h3>
+                <p class="mt-2 text-sm text-base-content/70">Créez votre compte client pour trouver un livreur et suivre vos livraisons.</p>
+                <a href="{% url 'accounts_app:inscription-clients' %}" class="btn mt-5 bg-[#059669] hover:bg-[#047857] text-white border-none rounded-xl">
+                    S'inscrire en tant que client
+                </a>
             </div>
 
             <div x-show="activeTab === 'entreprises'" x-transition.opacity class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto" style="display: none;">

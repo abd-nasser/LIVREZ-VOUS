@@ -38,6 +38,32 @@ class CreateLivreurView(CreateView):
         response['HX-Reswap'] = 'innerHTML'
         return response
     
+class CreateClientView(CreateView):
+    form_class = InscriptionClientForm
+    model = User
+    template_name = 'accounts_templates/clients_register.html'
+    
+    def form_valid(self, form):
+        form.save()  # Sauvegarde le formulaire et crée l'utilisateur
+        # En cas de SUCCÈS : HTMX remplace le conteneur global par le toast de succès
+        response = render(self.request, 'partials/accounts/_clients_register_result.html', {
+            'success': True,
+            'Title': "Bienvenue",
+            'message': "Félicitations, vous faites désormais partie de la plus grande communauté de clients !"
+        })
+        response['HX-Trigger'] = 'client-register-success'
+        return response
+
+    def form_invalid(self, form):
+        # En cas d'ERREUR : On renvoie le formulaire avec ses erreurs
+        response = render(self.request, 'partials/accounts/_clients_register_error_form.html', {
+            'inscription_client_form_errors': form, # Ton formulaire avec ses erreurs nettoyées
+        })
+        # ON RETARGET SUR LE BLOC FORMULAIRE SEULEMENT ET ON SWAP LE CONTENU
+        response['HX-Retarget'] = '#form-container'
+        response['HX-Reswap'] = 'innerHTML'
+        return response
+
 
 def login_view(request):
     if request.method != 'POST':

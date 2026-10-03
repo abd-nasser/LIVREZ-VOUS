@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Inscription Client | Vos avantages exclusifs{% endblock %}
+
+{% block content %}
+<div class="min-h-[85vh] flex items-center justify-center p-4 sm:p-6 lg:p-8" 
+     x-data="{ 
+         showPassword: false, 
+         showConfirmPassword: false 
+     }">
+
+    <!-- CARTE PRINCIPALE SPLIT (2 COLONNES) -->
+    <div class="w-full max-w-5xl bg-base-100 border border-base-300 rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 relative">
+        
+        <!-- Effets lumineux d'arrière-plan (Glassmorphism) -->
+        <div class="absolute -top-20 -left-20 w-56 h-56 bg-[#059669]/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-20 -right-20 w-56 h-56 bg-[#F97316]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- ================================================================= -->
+        <!-- COLONNE GAUCHE : FORMULAIRE D'INSCRIPTION (7/12 colonnes sur desktop) -->
+        <!-- ================================================================= -->
+        <div class="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-between relative z-10 border-b lg:border-b-0 lg:border-r border-base-200">
+            <div>
+                <!-- En-tête de gauche -->
+                <div class="space-y-2 mb-8">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#059669]/10 text-[#059669] text-xs font-extrabold uppercase tracking-wider">
+                        <span>🚀 En quelques secondes</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-black text-base-content tracking-tight">
+                        Créer un compte client
+                    </h1>
+                    <p class="text-xs sm:text-sm text-base-content/60 font-medium">
+                        Renseignez vos informations ci-dessous pour démarrer
+                    </p>
+                </div>
+
+                <!-- CONTENEUR DU FORMULAIRE SWAPPÉ PAR HTMX -->
+                <div id="form-container" class="relative z-10">
+                    {% include 'partials/accounts/_clients_register_error_form.html' with inscription_client_form_errors=form %}
+                </div>
+            </div>
+
+            <!-- Pied de page / Lien Connexion -->
+            <div class="mt-8 pt-6 border-t border-base-200 text-center text-xs sm:text-sm text-base-content/70">
+                Vous avez déjà un compte ? 
+                <a href="{% url 'accounts_app:login' %}" class="font-bold text-[#059669] hover:underline hover:text-[#047857] transition-colors ml-1">
+                    Se connecter
+                </a>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- COLONNE DROITE : LES AVANTAGES COMPTE CLIENT (5/12 colonnes) -->
+        <!-- ================================================================= -->
+        <div class="lg:col-span-5 bg-gradient-to-br from-base-200/60 via-base-200/30 to-base-100 p-6 sm:p-10 flex flex-col justify-between relative overflow-hidden z-10">
+            
+            <div class="space-y-8">
+                <!-- Titre de la section avantages -->
+                <div class="space-y-2">
+                    <h2 class="text-xl sm:text-2xl font-black text-base-content">
+                        Pourquoi nous rejoindre ?
+                    </h2>
+                    <p class="text-xs sm:text-sm text-base-content/60 font-medium">
+                        Profitez d'une expérience de livraison repensée pour vous simplifier la vie.
+                    </p>
+                </div>
+
+                <!-- LISTE DES AVANTAGES -->
+                <div class="space-y-5">
+                    
+                    <!-- Avantage 1 -->
+                    <div class="flex items-start gap-4 p-3.5 rounded-2xl bg-base-100/80 border border-base-300 shadow-sm backdrop-blur-sm transition-transform hover:-translate-y-0.5">
+                        <div class="w-10 h-10 rounded-xl bg-[#059669]/10 text-[#059669] flex items-center justify-center shrink-0 text-xl font-bold">
+                            ⚡
+                        </div>
+                        <div class="space-y-0.5">
+                            <h3 class="text-sm font-bold text-base-content">Commandes Ultra-Rapides</h3>
+                            <p class="text-xs text-base-content/60 leading-relaxed">
+                                Passez vos demandes de course en 3 clics et trouvez un livreur disponible immédiatement.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Avantage 2 -->
+                    <div class="flex items-start gap-4 p-3.5 rounded-2xl bg-base-100/80 border border-base-300 shadow-sm backdrop-blur-sm transition-transform hover:-translate-y-0.5">
+                        <div class="w-10 h-10 rounded-xl bg-[#F97316]/10 text-[#F97316] flex items-center justify-center shrink-0 text-xl font-bold">
+                            📍
+                        </div>
+                        <div class="space-y-0.5">
+                            <h3 class="text-sm font-bold text-base-content">Suivi en Temps Réel</h3>
+                            <p class="text-xs text-base-content/60 leading-relaxed">
+                                Suivez l'itinéraire et la progression de votre colis étape par étape sur la carte.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Avantage 3 -->
+                    <div class="flex items-start gap-4 p-3.5 rounded-2xl bg-base-100/80 border border-base-300 shadow-sm backdrop-blur-sm transition-transform hover:-translate-y-0.5">
+                        <div class="w-10 h-10 rounded-xl bg-[#059669]/10 text-[#059669] flex items-center justify-center shrink-0 text-xl font-bold">
+                            🛡️️
+                        </div>
+                        <div class="space-y-0.5">
+                            <h3 class="text-sm font-bold text-base-content">Livreurs Vérifiés</h3>
+                            <p class="text-xs text-base-content/60 leading-relaxed">
+                                Tous nos livreurs partenaires sont certifiés pour garantir la sécurité de vos colis.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Avantage 4 -->
+                    <div class="flex items-start gap-4 p-3.5 rounded-2xl bg-base-100/80 border border-base-300 shadow-sm backdrop-blur-sm transition-transform hover:-translate-y-0.5">
+                        <div class="w-10 h-10 rounded-xl bg-[#F97316]/10 text-[#F97316] flex items-center justify-center shrink-0 text-xl font-bold">
+                            💬
+                        </div>
+                        <div class="space-y-0.5">
+                            <h3 class="text-sm font-bold text-base-content">Contact Direct</h3>
+                            <p class="text-xs text-base-content/60 leading-relaxed">
+                                Appelez ou discutez directement avec votre livreur en charge pour préciser vos instructions.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- BADGE SOCIAL PROOF EN BAS -->
+            <div class="mt-8 pt-6 border-t border-base-300/60 flex items-center gap-3">
+                <div class="avatar-group -space-x-3 shrink-0">
+                    <div class="w-8 h-8 rounded-full border-2 border-base-100 bg-[#059669] text-white flex items-center justify-center text-xs font-extrabold">A</div>
+                    <div class="w-8 h-8 rounded-full border-2 border-base-100 bg-[#F97316] text-white flex items-center justify-center text-xs font-extrabold">K</div>
+                    <div class="w-8 h-8 rounded-full border-2 border-base-100 bg-base-300 text-base-content flex items-center justify-center text-xs font-extrabold">+</div>
+                </div>
+                <p class="text-xs font-semibold text-base-content/70">
+                    Rejoignez des centaines de clients satisfaits.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

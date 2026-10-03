@@ -13,22 +13,33 @@ User = get_user_model()
 class InscriptionClientForm(forms.ModelForm):
     """Inscription simple pour les clients finaux (Téléphone + Mot de passe + Nom)"""
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'Mot de passe'}),
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Mot de passe', 
+            ":type":"showPassword ? 'text' : 'password'",
+            "class": 'input input-bordered w-full pr-10 rounded-xl focus:border-[#059669] focus:outline-none transition-colors',
+            "required": True,
+            }),
         label="Mot de passe"
     )
     confirm_password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'placeholder': 'Confirmez le mot de passe'}),
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Confirmez le mot de passe',
+            ":type":"showConfirmPassword ? 'text' : 'password'",
+            "class": 'input input-bordered w-full pr-10 rounded-xl focus:border-[#059669] focus:outline-none transition-colors',
+            "required": True,
+        }),
         label="Confirmation du mot de passe"
     )
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'telephone', 'email']
+        fields = ['first_name', 'last_name', 'username', 'telephone', 'email']
         widgets = {
-            'first_name': forms.TextInput(attrs={'placeholder': 'Prénom'}),
-            'last_name': forms.TextInput(attrs={'placeholder': 'Nom'}),
-            'telephone': forms.TextInput(attrs={'placeholder': 'Numéro de téléphone (ex: 70000000)'}),
-            'email': forms.EmailInput(attrs={'placeholder': 'Email (Optionnel)'}),
+            'first_name': forms.TextInput(attrs={'placeholder': 'Prénom', 'class': 'input input-bordered w-full pr-10 rounded-xl focus:border-[#059669] focus:outline-none transition-colors"'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'Nom', 'class': 'input input-bordered w-full pr-10 rounded-xl focus:border-[#059669] focus:outline-none transition-colors"'}),
+            'username': forms.TextInput(attrs={'placeholder': 'Nom d\'utilisateur', 'class': 'input input-bordered w-full pr-10 rounded-xl focus:border-[#059669] focus:outline-none transition-colors"'}),
+            'telephone': forms.TextInput(attrs={'placeholder': 'Numéro de téléphone (ex: 70000000)', 'class': 'input input-bordered w-full pr-10 rounded-xl focus:border-[#059669] focus:outline-none transition-colors"'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'Email (Optionnel)', 'class': 'input input-bordered w-full pr-10 rounded-xl focus:border-[#059669] focus:outline-none transition-colors"'}),
         }
 
     def clean_confirm_password(self):

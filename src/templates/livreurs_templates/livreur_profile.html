@@ -11,8 +11,8 @@
             <!-- Photo de profil avec badge de statut -->
             <div class="relative">
                 <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border-4 border-base-100 shadow-md bg-base-200">
-                    {% if livreur.user.photo %}
-                        <img src="{{ livreur.user.photo.url }}" alt="{{ livreur.user.get_full_name }}" class="w-full h-full object-cover">
+                    {% if livreur.photo_profil %}
+                        <img src="{{ livreur.photo_profil.url }}" alt="{{ livreur.user.get_full_name }}" class="w-full h-full object-cover">
                     {% else %}
                         <div class="w-full h-full flex items-center justify-center bg-[#059669]/10 text-[#059669] text-3xl font-extrabold">
                             {{ livreur.user.first_name|slice:":1" }}{{ livreur.user.last_name|slice:":1" }}
@@ -38,11 +38,24 @@
                         <span class="text-xs font-bold uppercase tracking-wider text-base-content/70">
                             Statut : <span x-text="estDisponible ? 'Disponible' : 'Indisponible'" :class="estDisponible ? 'text-[#059669]' : 'text-base-content/50'"></span>
                         </span>
-                        <input type="checkbox" 
+                        
+                        {% if livreur.est_valide %}
+                             <input type="checkbox" 
                                class="toggle toggle-success toggle-sm"
                                x-model="estDisponible"
-                               hx-post="{% url 'accounts_app:toggle-livreur-disponibilite' %}"
+                               hx-post="{% url 'livreurs_app:livreur-disponibilite' livreur.pk %}"
                                hx-swap="none" />
+                               {% else %}
+                                <input type="checkbox" 
+                                class="toggle toggle-success toggle-sm"
+                                x-model="estDisponible"
+                                hx-post="#"
+                                disabled
+                                aria-label="Statut indisponible car le compte n'est pas validé"
+                                hx-swap="none" />
+                        {% endif %}
+                            
+                       
                     </div>
                 </div>
 
@@ -59,7 +72,7 @@
                     {% endif %}
                     
                     <span class="badge bg-base-200 text-base-content/80 border-base-300 text-xs">
-                        🛵 {{ livreur.get_moyen_transport_display|default:livreur.moyen_transport }}
+                        🛵 {{ livreur.moyen_de_transport|default:livreur.moyen_de_transport }}
                     </span>
                 </div>
             </div>

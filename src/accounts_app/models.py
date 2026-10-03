@@ -50,9 +50,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     # Champs demandés lors de la commande python manage.py createsuperuser
     REQUIRED_FIELDS = ['first_name', 'last_name']
+    
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} ({self.telephone})"
-    
+        return f"{self.get_full_name()} ({self.telephone})"
     
     

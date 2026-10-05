@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.db import transaction
+from clients_app.models import Client
 from entreprises_app.models import Entreprise, Zone
 from livreurs_app.models import Livreur
 
@@ -11,10 +12,50 @@ User = get_user_model()
 # 1. FORMULAIRE CLIENT
 # ==========================================
 class InscriptionClientForm(forms.ModelForm):
-    """Inscription simple pour les clients finaux (Téléphone + Mot de passe + Nom)"""
+    """Inscription du compte utilisateur et de son profil client."""
+    username = forms.CharField(
+        max_length=30,
+        label="Nom d'utilisateur",
+        widget=forms.TextInput(attrs={
+            'placeholder': "Nom d'utilisateur",
+            'class': 'input input-bordered w-full rounded-xl',
+        }),
+    )
+    first_name = forms.CharField(
+        max_length=30,
+        label="Prénom",
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Prénom',
+            'class': 'input input-bordered w-full rounded-xl',
+        }),
+    )
+    last_name = forms.CharField(
+        max_length=30,
+        label="Nom",
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Nom',
+            'class': 'input input-bordered w-full rounded-xl',
+        }),
+    )
+    telephone = forms.CharField(
+        max_length=20,
+        label="Numéro de téléphone",
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Numéro de téléphone (ex: 70000000)',
+            'class': 'input input-bordered w-full rounded-xl',
+        }),
+    )
+    email = forms.EmailField(
+        required=False,
+        label="Email",
+        widget=forms.EmailInput(attrs={
+            'placeholder': 'Email (Optionnel)',
+            'class': 'input input-bordered w-full rounded-xl',
+        }),
+    )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
-            'placeholder': 'Mot de passe', 
+            'placeholder': 'Mot de passe',
             ":type":"showPassword ? 'text' : 'password'",
             "class": 'input input-bordered w-full pr-10 rounded-xl focus:border-[#059669] focus:outline-none transition-colors',
             "required": True,
@@ -32,14 +73,18 @@ class InscriptionClientForm(forms.ModelForm):
     )
 
     class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'username', 'telephone', 'email']
+        model = Client
+        fields = ["photo_profil", "ville", "quartier"]
         widgets = {
-            'first_name': forms.TextInput(attrs={'placeholder': 'Prénom', 'class': 'input input-bordered w-full pr-10 rounded-xl focus:border-[#059669] focus:outline-none transition-colors"'}),
-            'last_name': forms.TextInput(attrs={'placeholder': 'Nom', 'class': 'input input-bordered w-full pr-10 rounded-xl focus:border-[#059669] focus:outline-none transition-colors"'}),
-            'username': forms.TextInput(attrs={'placeholder': 'Nom d\'utilisateur', 'class': 'input input-bordered w-full pr-10 rounded-xl focus:border-[#059669] focus:outline-none transition-colors"'}),
-            'telephone': forms.TextInput(attrs={'placeholder': 'Numéro de téléphone (ex: 70000000)', 'class': 'input input-bordered w-full pr-10 rounded-xl focus:border-[#059669] focus:outline-none transition-colors"'}),
-            'email': forms.EmailInput(attrs={'placeholder': 'Email (Optionnel)', 'class': 'input input-bordered w-full pr-10 rounded-xl focus:border-[#059669] focus:outline-none transition-colors"'}),
+            'photo_profil': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+            'ville': forms.TextInput(attrs={
+                'placeholder': 'Ville (Optionnel)',
+                'class': 'input input-bordered w-full rounded-xl',
+            }),
+            'quartier': forms.TextInput(attrs={
+                'placeholder': 'Quartier (Optionnel)',
+                'class': 'input input-bordered w-full rounded-xl',
+            }),
         }
 
     def clean_confirm_password(self):
@@ -49,13 +94,36 @@ class InscriptionClientForm(forms.ModelForm):
             raise forms.ValidationError("Les mots de passe ne correspondent pas.")
         return confirm_password
 
+    def clean_telephone(self):
+        telephone = self.cleaned_data['telephone']
+        if User.objects.filter(telephone=telephone).exists():
+            raise forms.ValidationError("Ce numéro de téléphone est déjà utilisé.")
+        return telephone
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("Ce nom d'utilisateur est déjà utilisé.")
+        return username
+
+    @transaction.atomic
     def save(self, commit=True):
-        user = super().save(commit=False)
-        user.role = 'client'
+        client = super().save(commit=False)
+        user = User(
+            username=self.cleaned_data['username'],
+            telephone=self.cleaned_data['telephone'],
+            first_name=self.cleaned_data['first_name'],
+            last_name=self.cleaned_data['last_name'],
+            email=self.cleaned_data.get('email', ''),
+            role='client',
+        )
         user.set_password(self.cleaned_data['password'])
+        client.user = user
+
         if commit:
             user.save()
-        return user
+            client.save()
+        return client
 
 
 # ==========================================

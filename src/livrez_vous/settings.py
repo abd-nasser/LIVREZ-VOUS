@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'home_app',
     'accounts_app',
     'zones_app',
+    'clients_app',
     'entreprises_app',
     'livreurs_app',
     'commandes_app',

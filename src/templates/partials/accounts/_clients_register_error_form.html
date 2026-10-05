@@ -1,7 +1,10 @@
+{% load static %}
 <form hx-post="{% url 'accounts_app:inscription-clients' %}"
       hx-target="#form-container"
       hx-swap="innerHTML"
-      hx-indicator="#submit-spinner"
+      hx-encoding="multipart/form-data"
+      hx-indicator="#register-result-indic"
+      enctype="multipart/form-data"
       class="space-y-4">
 
     {% csrf_token %}
@@ -16,6 +19,31 @@
             {% endfor %}
         </div>
     {% endif %}
+
+    <!-- Photo de profil facultative selon le modèle Client -->
+    <div class="form-control w-full">
+        <label class="label">
+            <span class="label-text font-semibold">Photo de profil <span class="text-base-content/40 font-normal">(Optionnel)</span></span>
+        </label>
+        <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-2xl bg-base-200 border-2 border-dashed border-base-300 flex items-center justify-center overflow-hidden shrink-0">
+                <template x-if="photoProfil">
+                    <img :src="photoProfil" class="w-full h-full object-cover" />
+                </template>
+                <template x-if="!photoProfil">
+                    <span class="text-2xl">📸</span>
+                </template>
+            </div>
+            <input type="file" name="photo_profil" accept="image/*"
+                   @change="photoProfil = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
+                   class="file-input file-input-bordered file-input-sm w-full rounded-xl file-input-primary" />
+        </div>
+        {% if inscription_client_form_errors.photo_profil.errors %}
+            <span class="text-xs text-rose-500 font-semibold mt-1">
+                {{ inscription_client_form_errors.photo_profil.errors.0 }}
+            </span>
+        {% endif %}
+    </div>
 
     <!-- BLOC NOM & PRÉNOM (Sur 2 colonnes) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -46,6 +74,32 @@
         </div>
     </div>
 
+    <!-- VILLE ET QUARTIER (Optionnels selon le modèle Client) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="form-control">
+            <label class="label py-1">
+                <span class="label-text text-xs font-bold uppercase tracking-wider text-base-content/70">Ville <span class="text-base-content/40 font-normal">(Optionnel)</span></span>
+            </label>
+            {{ inscription_client_form_errors.ville }}
+            {% if inscription_client_form_errors.ville.errors %}
+                <span class="text-xs text-rose-500 font-semibold mt-1">
+                    {{ inscription_client_form_errors.ville.errors.0 }}
+                </span>
+            {% endif %}
+        </div>
+        <div class="form-control">
+            <label class="label py-1">
+                <span class="label-text text-xs font-bold uppercase tracking-wider text-base-content/70">Quartier <span class="text-base-content/40 font-normal">(Optionnel)</span></span>
+            </label>
+            {{ inscription_client_form_errors.quartier }}
+            {% if inscription_client_form_errors.quartier.errors %}
+                <span class="text-xs text-rose-500 font-semibold mt-1">
+                    {{ inscription_client_form_errors.quartier.errors.0 }}
+                </span>
+            {% endif %}
+        </div>
+    </div>
+
     <!-- NOM D'UTILISATEUR -->
     <div class="form-control">
         <label class="label py-1">
@@ -58,7 +112,14 @@
             </span>
         {% endif %}
     </div>
-
+     <!-- Indicateur de chargement HTMX -->
+                    <div id="register-result-indic" class="htmx-indicator pointer-events-none absolute inset-0 z-50 flex items-center justify-center rounded-2xl border border-base-300 bg-base-100/90 p-6 text-center backdrop-blur-sm transition-opacity" role="status" aria-live="polite" aria-atomic="true">
+                        <div class="flex flex-col items-center gap-3">
+                            <img src="{% static 'images/loading.svg' %}" alt="Loading..." class="w-45 h-45" />
+                            <p class="font-bold text-base-content">Envoi de votre candidature...</p>
+                            <p class="text-sm text-base-content/70">Vos informations et documents sont en cours de traitement.</p>
+                        </div>
+                    </div>
     <!-- TÉLÉPHONE -->
     <div class="form-control">
         <label class="label py-1">

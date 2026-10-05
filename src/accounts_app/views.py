@@ -2,15 +2,14 @@ from django.contrib.auth import authenticate, login, logout as auth_logout
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import redirect, render
 from django.views.generic import CreateView
+from clients_app.models import Client
 from livreurs_app.models import Livreur
 from .models import User
-
+from django.contrib.auth.decorators import login_required   
 
 from .forms import (InscriptionEntrepriseForm, 
                     InscriptionLivreurForm, 
                     InscriptionClientForm)
-
-
 
 class CreateLivreurView(CreateView):
     form_class = InscriptionLivreurForm
@@ -40,12 +39,11 @@ class CreateLivreurView(CreateView):
     
 class CreateClientView(CreateView):
     form_class = InscriptionClientForm
-    model = User
+    model = Client
     template_name = 'accounts_templates/clients_register.html'
     
     def form_valid(self, form):
-        form.save()  # Sauvegarde le formulaire et crée l'utilisateur
-        # En cas de SUCCÈS : HTMX remplace le conteneur global par le toast de succès
+        form.save()
         response = render(self.request, 'partials/accounts/_clients_register_result.html', {
             'success': True,
             'Title': "Bienvenue",

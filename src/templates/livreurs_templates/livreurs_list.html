@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Livreurs disponibles | Vos courses en toute sérénité{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-8" x-data="{ openFilters: false }">
+
+    <!-- EN-TÊTE PRINCIPAL -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#059669]/10 text-[#059669] text-xs font-extrabold uppercase tracking-wider mb-2">
+                <span>🟢 Service réactif</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-black text-base-content tracking-tight">
+                Livreurs à proximité
+            </h1>
+            <p class="text-xs sm:text-sm text-base-content/60 font-medium">
+                Trouvez et contactez un livreur certifié dans votre zone en temps réel
+            </p>
+        </div>
+    </div>
+
+    <!-- BARRE DE RECHERCHE ET FILTRES HTMX -->
+    <div class="bg-base-100 p-4 sm:p-5 rounded-2xl border border-base-300 shadow-sm space-y-4">
+        
+        <form hx-get="{% url 'list_livreurs' %}" 
+              hx-target="#livreurs-container" 
+              hx-swap="innerHTML" 
+              hx-trigger="change, keyup changed delay:300ms from:#search-input"
+              class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+
+            <!-- CHAMP RECHERCHE TEXTE -->
+            <div class="sm:col-span-5 relative">
+                <input type="text" 
+                       id="search-input"
+                       name="search" 
+                       placeholder="Rechercher par nom, téléphone..." 
+                       class="input input-bordered w-full pr-10 rounded-xl focus:border-[#059669] focus:outline-none text-sm transition-colors" />
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/40 pointer-events-none">
+                    🔍
+                </span>
+            </div>
+
+            <!-- FILTRE VILLE -->
+            <div class="sm:col-span-3">
+                <input type="text" 
+                       name="ville" 
+                       placeholder="Filtrer par ville..." 
+                       class="input input-bordered w-full rounded-xl focus:border-[#059669] focus:outline-none text-sm transition-colors" />
+            </div>
+
+            <!-- FILTRE QUARTIER -->
+            <div class="sm:col-span-2">
+                <input type="text" 
+                       name="quartier" 
+                       placeholder="Quartier..." 
+                       class="input input-bordered w-full rounded-xl focus:border-[#059669] focus:outline-none text-sm transition-colors" />
+            </div>
+
+            <!-- TOGGLE DISPONIBILITÉ SEULEMENT -->
+            <div class="sm:col-span-2 flex items-center justify-end">
+                <label class="label cursor-pointer gap-2 py-0">
+                    <span class="label-text text-xs font-bold text-base-content/70">Disponibles</span> 
+                    <input type="checkbox" name="disponible" value="true" class="toggle toggle-sm toggle-success" />
+                </label>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- CONTENEUR DYNAMIQUE SWAPPÉ PAR HTMX -->
+    <div id="livreurs-container" class="relative min-h-[300px]">
+        {% include 'partials/livreurs/_livreurs_list.html' %}
+    </div>
+
+</div>
+{% endblock %}

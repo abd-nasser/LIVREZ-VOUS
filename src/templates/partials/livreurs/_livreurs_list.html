@@ -1,0 +1,115 @@
+<!-- GRILLE DES LIVREURS -->
+{% if livreurs %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {% for livreur in livreurs %}
+            <div class="card bg-base-100 border border-base-300 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group">
+                
+                <div class="p-5 flex flex-col justify-between h-full space-y-4">
+                    
+                    <!-- EN-TÊTE : Photo + Statut -->
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <!-- Avatar / Initiale -->
+                            <div class="avatar placeholder">
+                                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#059669] to-[#047857] text-white font-extrabold text-lg shadow-md shadow-[#059669]/20 flex items-center justify-center">
+                                    {% if livreur.user.photo %}
+                                        <img src="{{ livreur.user.photo.url }}" alt="{{ livreur.user.get_full_name }}" class="object-cover w-full h-full rounded-xl" />
+                                    {% else %}
+                                        <span>{{ livreur.user.first_name|slice:":1"|default:"L" }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 class="font-bold text-base-content text-sm sm:text-base group-hover:text-[#059669] transition-colors line-clamp-1">
+                                    {{ livreur.user.get_full_name|default:livreur.user.username }}
+                                </h3>
+                                <p class="text-xs text-base-content/60 font-medium flex items-center gap-1">
+                                    <span>📍</span> {{ livreur.zone_actuelle.quartier|default:"Zone non définie" }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Badge Disponibilité -->
+                        {% if livreur.disponible %}
+                            <span class="badge badge-sm border-none bg-[#059669]/10 text-[#059669] font-bold px-2 py-1 flex items-center gap-1 shrink-0">
+                                <span class="w-2 h-2 rounded-full bg-[#059669] animate-pulse"></span> Libre
+                            </span>
+                        {% else %}
+                            <span class="badge badge-sm border-none bg-base-200 text-base-content/50 font-bold px-2 py-1 shrink-0">
+                                Occupé
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- INFOS COMPLÉMENTAIRES (Note, Véhicule, Courses) -->
+                    <div class="grid grid-cols-2 gap-2 p-3 rounded-xl bg-base-200/50 text-xs">
+                        <div>
+                            <span class="text-base-content/50 block">Moyen de transport</span>
+                            <span class="font-bold text-base-content flex items-center gap-1">
+                                🛵 {{ livreur.moyen_transport|default:"Moto" }}
+                            </span>
+                        </div>
+                        <div>
+                            <span class="text-base-content/50 block">Note globale</span>
+                            <span class="font-bold text-[#F97316] flex items-center gap-1">
+                                ⭐ {{ livreur.note_moyenne|default:"5.0" }} / 5
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- ACTIONS : Chat Interne & Demande de Course -->
+                    <div class="pt-2 grid grid-cols-12 gap-2">
+                        
+                        <!-- BOUTON CHAT INTERNE -->
+                        <a href="{% url 'chat_room' livreur.id %}" 
+                           title="Discuter avec le livreur"
+                           class="col-span-4 btn btn-sm bg-base-200 hover:bg-[#F97316]/10 hover:text-[#F97316] text-base-content border-none rounded-xl font-bold transition-colors flex items-center justify-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                            <span>Chat</span>
+                        </a>
+
+                        <!-- BOUTON COMMANDER / DEMANDER DE LA COURSE -->
+                        <a href="{% url 'creer_course' %}?livreur={{ livreur.id }}" 
+                           class="col-span-8 btn btn-sm bg-[#059669] hover:bg-[#047857] text-white border-none rounded-xl font-bold transition-all shadow-md shadow-[#059669]/10 flex items-center justify-center gap-1">
+                            <span>Choisir ce livreur</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </a>
+
+                    </div>
+
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- PAGINATION HTMX (Optionnel) -->
+    {% if page_obj.has_next %}
+        <div class="text-center mt-8">
+            <button hx-get="?page={{ page_obj.next_page_number }}" 
+                    hx-target="#livreurs-container" 
+                    hx-swap="beforeend"
+                    class="btn btn-ghost text-[#059669] font-bold">
+                Charger plus de livreurs...
+            </button>
+        </div>
+    {% endif %}
+
+{% else %}
+    <!-- AUCUN RÉSULTAT -->
+    <div class="text-center py-16 bg-base-100 rounded-3xl border border-base-300 p-8 space-y-4">
+        <div class="w-16 h-16 bg-[#F97316]/10 text-[#F97316] rounded-2xl flex items-center justify-center mx-auto text-2xl font-bold">
+            🔍
+        </div>
+        <div class="space-y-1">
+            <h3 class="text-lg font-bold text-base-content">Aucun livreur trouvé</h3>
+            <p class="text-xs sm:text-sm text-base-content/60 max-w-md mx-auto">
+                Essayez de modifier votre recherche ou de réinitialiser les filtres pour voir plus de livreurs disponibles dans d'autres zones.
+            </p>
+        </div>
+    </div>
+{% endif %}

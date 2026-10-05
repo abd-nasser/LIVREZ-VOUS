@@ -22,10 +22,28 @@
                     <a href="{% url 'accounts_app:inscription-livreurs' %}" class="hover:text-[#059669] transition-colors">Devenir Livreur</a>
                 </nav>
                 
-                {% if user.is_authenticated %}
+                {% if user.is_authenticated and user.role == "livreur" %}
                 <div class="flex items-center gap-3">
                     <a class="btn bg-[#059669] hover:bg-[#047857] text-white btn-sm sm:btn-md rounded-xl border-none shadow-md shadow-[#059669]/20"
                        href="{% url 'livreurs_app:livreur-profil' user.livreur_profil.pk %}">Mon espace</a>
+                    <form method="post" action="{% url 'accounts_app:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline btn-sm sm:btn-md rounded-xl">Déconnexion</button>
+                    </form>
+                </div>
+                {% elif user.is_authenticated and user.role == "client" %}
+                <div class="flex items-center gap-3">
+                    <a class="btn bg-[#059669] hover:bg-[#047857] text-white btn-sm sm:btn-md rounded-xl border-none shadow-md shadow-[#059669]/20"
+                       href="{% url 'clients_app:client-profil' user.client_profil.pk %}">Mon espace</a>
+                    <form method="post" action="{% url 'accounts_app:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline btn-sm sm:btn-md rounded-xl">Déconnexion</button>
+                    </form>
+                </div>
+                {% elif user.is_authenticated and user.role == "entreprise" %}
+                <div class="flex items-center gap-3">
+                    <a class="btn bg-[#059669] hover:bg-[#047857] text-white btn-sm sm:btn-md rounded-xl border-none shadow-md shadow-[#059669]/20"
+                       href="{% url 'accounts_app:entreprise-profil' user.entreprise_profil.pk %}">Mon espace</a>
                     <form method="post" action="{% url 'accounts_app:logout' %}">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-outline btn-sm sm:btn-md rounded-xl">Déconnexion</button>

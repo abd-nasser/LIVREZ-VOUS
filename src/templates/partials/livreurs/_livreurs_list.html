@@ -47,7 +47,7 @@
                         <div>
                             <span class="text-base-content/50 block">Moyen de transport</span>
                             <span class="font-bold text-base-content flex items-center gap-1">
-                                🛵 {{ livreur.moyen_transport|default:"Moto" }}
+                                🛵 {{ livreur.moyen_de_transport|default:"Moto" }}
                             </span>
                         </div>
                         <div>
@@ -62,7 +62,7 @@
                     <div class="pt-2 grid grid-cols-12 gap-2">
                         
                         <!-- BOUTON CHAT INTERNE -->
-                        <a href="{% url 'chat_room' livreur.id %}" 
+                        <a href="#" 
                            title="Discuter avec le livreur"
                            class="col-span-4 btn btn-sm bg-base-200 hover:bg-[#F97316]/10 hover:text-[#F97316] text-base-content border-none rounded-xl font-bold transition-colors flex items-center justify-center gap-1">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -72,7 +72,7 @@
                         </a>
 
                         <!-- BOUTON COMMANDER / DEMANDER DE LA COURSE -->
-                        <a href="{% url 'creer_course' %}?livreur={{ livreur.id }}" 
+                        <a href="{% url 'livreurs_app:livreur-profil' livreur.id %}" 
                            class="col-span-8 btn btn-sm bg-[#059669] hover:bg-[#047857] text-white border-none rounded-xl font-bold transition-all shadow-md shadow-[#059669]/10 flex items-center justify-center gap-1">
                             <span>Choisir ce livreur</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

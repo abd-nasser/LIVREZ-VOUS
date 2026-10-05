@@ -46,7 +46,7 @@
                         ★ {{ livreur.note_moyenne|default:"5.0" }} <span class="text-base-content/50 font-normal">({{ livreur.total_avis|default:0 }} avis)</span>
                     </span>
                     <span>•</span>
-                    <span>🛵 {{ livreur.get_moyen_transport_display|default:livreur.moyen_transport }}</span>
+                    <span>🛵 {{ livreur.moyen_de_transport|default:livreur.moyen_de_transport }}</span>
                     <span>•</span>
                     <span>📍 {{ livreur.zone_couverture|default:"Secteur général" }}</span>
                 </div>

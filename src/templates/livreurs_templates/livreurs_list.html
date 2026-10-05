@@ -23,7 +23,7 @@
     <!-- BARRE DE RECHERCHE ET FILTRES HTMX -->
     <div class="bg-base-100 p-4 sm:p-5 rounded-2xl border border-base-300 shadow-sm space-y-4">
         
-        <form hx-get="{% url 'list_livreurs' %}" 
+        <form hx-get="{% url 'livreurs_app:list-livreurs' %}" 
               hx-target="#livreurs-container" 
               hx-swap="innerHTML" 
               hx-trigger="change, keyup changed delay:300ms from:#search-input"

@@ -1,0 +1,105 @@
+<div class="bg-base-100 rounded-3xl border {% if success %} border-[#059669]/30 {% else %} border-[#F97316]/40 {% endif %} p-8 sm:p-12 text-center shadow-2xl relative overflow-hidden animate-fade-in"
+     x-data="{ showToast: true }">
+    
+    <!-- Halos de lumière décoratifs en fond -->
+    {% if success %}
+        <div class="absolute -top-16 left-1/2 -translate-x-1/2 w-64 h-64 bg-[#059669]/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-16 right-0 w-48 h-48 bg-[#F97316]/15 rounded-full blur-2xl pointer-events-none"></div>
+    {% else %}
+        <div class="absolute -top-16 left-1/2 -translate-x-1/2 w-64 h-64 bg-[#F97316]/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-16 right-0 w-48 h-48 bg-red-500/10 rounded-full blur-2xl pointer-events-none"></div>
+    {% endif %}
+
+    <!-- TOAST POPUP TELEPORTE EN HAUT DE PAGE -->
+    <template x-teleport="body">
+        <div x-show="showToast" 
+             x-transition:enter="transition ease-out duration-300 transform"
+             x-transition:enter-start="-translate-y-full opacity-0"
+             x-transition:enter-end="translate-y-0 opacity-100"
+             x-transition:leave="transition ease-in duration-200 transform"
+             x-transition:leave-start="translate-y-0 opacity-100"
+             x-transition:leave-end="-translate-y-full opacity-0"
+             class="fixed top-6 right-4 left-4 sm:left-auto sm:max-w-md z-50">
+            
+            <div class="bg-base-100 border-2 {% if success %} border-[#059669] {% else %} border-[#F97316] {% endif %} shadow-2xl rounded-2xl p-4 flex items-center gap-4">
+                
+                <!-- Icone du Toast -->
+                <div class="w-12 h-12 rounded-xl {% if success %} bg-[#059669] shadow-[#059669]/30 {% else %} bg-[#F97316] shadow-[#F97316]/30 {% endif %} text-white flex items-center justify-center font-extrabold text-2xl shrink-0 shadow-md">
+                    {% if success %} 🎉 {% else %} ⚠️ {% endif %}
+                </div>
+
+                <!-- Texte du Toast -->
+                <div class="flex-grow">
+                    <p class="font-black text-sm text-base-content">{{ title|default:Title }}</p>
+                    <p class="text-xs text-base-content/70 mt-0.5 leading-snug">
+                        {% if success %}
+                            Votre inscription a été enregistrée.
+                        {% else %}
+                            Veuillez corriger les erreurs ci-dessous.
+                        {% endif %}
+                    </p>
+                </div>
+
+                <button @click="showToast = false" class="btn btn-xs btn-circle btn-ghost text-base-content/50 hover:text-base-content">✕</button>
+            </div>
+        </div>
+    </template>
+
+    <!-- ICONE PRINCIPALE ANIMÉE -->
+    <div class="relative z-10 mx-auto w-20 h-20 sm:w-24 sm:h-24 rounded-full {% if success %} bg-[#059669]/10 border-[#059669] text-[#059669] shadow-[#059669]/20 {% else %} bg-[#F97316]/10 border-[#F97316] text-[#F97316] shadow-[#F97316]/20 {% endif %} border-2 flex items-center justify-center mb-6 shadow-xl">
+        {% if success %}
+            <svg class="w-10 h-10 sm:w-12 sm:h-12 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+            </svg>
+        {% else %}
+            <svg class="w-10 h-10 sm:w-12 sm:h-12 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+        {% endif %}
+    </div>
+
+    <!-- TITRE & MESSAGE -->
+    <div class="relative z-10 max-w-lg mx-auto">
+        <span class="badge {% if success %} bg-[#059669] {% else %} bg-[#F97316] {% endif %} text-white font-bold text-[11px] uppercase tracking-wider px-3 py-1 border-none mb-3">
+            {% if success %} Succès {% else %} Formulaire incomplet {% endif %}
+        </span>
+        
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-base-content tracking-tight">
+            {{ title|default:Title }}
+        </h2>
+
+        <p class="mt-4 text-base sm:text-lg text-base-content/80 font-medium leading-relaxed">
+            {{ message }}
+        </p>
+    </div>
+
+    <!-- BLOC D'EXPLICATION SPECIFIQUE (SUCCÈS OU ERREUR) -->
+    <div class="relative z-10 mt-8 pt-8 border-t border-base-200 max-w-lg mx-auto text-left">
+        {% if success %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="p-4 rounded-2xl bg-base-200/50 border border-base-300">
+                    <span class="text-xl block mb-1">⏱️</span>
+                    <h4 class="font-bold text-xs uppercase tracking-wider text-base-content/60">Vérification</h4>
+                    <p class="text-xs text-base-content/80 mt-1">Analyse des pièces sous <strong>24h max</strong>.</p>
+                </div>
+                <div class="p-4 rounded-2xl bg-base-200/50 border border-base-300">
+                    <span class="text-xl block mb-1">💬</span>
+                    <h4 class="font-bold text-xs uppercase tracking-wider text-base-content/60">Notification</h4>
+                    <p class="text-xs text-base-content/80 mt-1">Alerte SMS / WhatsApp à la validation.</p>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center">
+                <a href="/" class="btn bg-[#059669] hover:bg-[#047857] text-white border-none btn-lg rounded-2xl font-bold shadow-xl shadow-[#059669]/20 w-full sm:w-auto px-8">
+                    Retourner à l'accueil
+                </a>
+            </div>
+        {% else %}
+            <div class="p-4 rounded-2xl bg-[#F97316]/10 border border-[#F97316]/30 text-[#C2410C] text-xs leading-relaxed">
+                <strong>Que faire maintenant ?</strong><br>
+                Vérifiez les champs soulignés en rouge dans le formulaire (numéro de téléphone déjà utilisé, mot de passe non identique ou images manquantes).
+            </div>
+        {% endif %}
+    </div>
+
+</div>

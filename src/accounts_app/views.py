@@ -1,15 +1,60 @@
+import logging
+
 from django.contrib.auth import authenticate, login, logout as auth_logout
+from django.db import transaction
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import redirect, render
 from django.views.generic import CreateView
 from clients_app.models import Client
 from livreurs_app.models import Livreur
+from entreprises_app.models import Entreprise
 from .models import User
 from django.contrib.auth.decorators import login_required   
 
 from .forms import (InscriptionEntrepriseForm, 
                     InscriptionLivreurForm, 
                     InscriptionClientForm)
+
+
+logger = logging.getLogger(__name__)
+
+class CreateEntrepriseView(CreateView):
+    form_class = InscriptionEntrepriseForm
+    model = Entreprise
+    template_name = 'accounts_templates/entreprises_register.html'
+    
+    def form_valid(self, form):
+        with transaction.atomic():
+            try:# Assure que la création de l'utilisateur et du profil Entreprise est atomique
+                form.save()  # Sauvegarde le formulaire et crée l'utilisateur + le profil Entreprise
+                # En cas de SUCCÈS : HTMX remplace le conteneur global par le toast de succès
+                response = render(self.request, 'partials/accounts/_entreprises_register_result.html', {
+                    'success': True,
+                    'Title': "Bienvenue",
+                    'message': "Félicitations, vous faites désormais partie de la plus grande communauté d'entreprises !"
+                })
+                response['HX-Trigger'] = 'entreprise-register-success'
+                return response
+            except Exception as e:
+                # En cas d'ERREUR : On renvoie le formulaire avec ses erreurs
+                logger.error(f"Erreur lors de la création de l'entreprise : {e}")
+                response = render(self.request, 'partials/accounts/_entreprises_register_error_form.html', {
+                    'inscription_entreprise_form_errors': form, # Ton formulaire avec ses erreurs nettoyées
+                })
+                # ON RETARGET SUR LE BLOC FORMULAIRE SEULEMENT ET ON SWAP LE CONTENU
+                response['HX-Retarget'] = '#form-container'
+                response['HX-Reswap'] = 'innerHTML'
+                return response
+
+    def form_invalid(self, form):
+        # En cas d'ERREUR : On renvoie le formulaire avec ses erreurs
+        response = render(self.request, 'partials/accounts/_entreprises_register_error_form.html', {
+            'inscription_entreprise_form_errors': form, # Ton formulaire avec ses erreurs nettoyées
+        })
+        # ON RETARGET SUR LE BLOC FORMULAIRE SEULEMENT ET ON SWAP LE CONTENU
+        response['HX-Retarget'] = '#form-container'
+        response['HX-Reswap'] = 'innerHTML'
+        return response
 
 class CreateLivreurView(CreateView):
     form_class = InscriptionLivreurForm

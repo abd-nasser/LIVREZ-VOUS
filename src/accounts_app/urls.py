@@ -8,4 +8,5 @@ urlpatterns = [
     path('deconnexion/', views.logout_view, name="logout"),
     path('inscription/livreurs/', views.CreateLivreurView.as_view(), name="inscription-livreurs"),
     path('inscription/clients/', views.CreateClientView.as_view(), name="inscription-clients"),
+    path('inscription/entreprises/', views.CreateEntrepriseView.as_view(), name="inscription-entreprises"),
 ]

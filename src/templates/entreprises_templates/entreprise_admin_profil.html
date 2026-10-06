@@ -1,0 +1,586 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Admin | {{ entreprise.nom_entreprise }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-base-200/40 py-8 px-4 sm:px-6 lg:px-8"
+     x-data="{ 
+         activeTab: 'overview',
+         showAddAdminModal: false,
+         showAddLivreurModal: false,
+         showUpgradeModal: false
+     }">
+
+    <div class="max-w-7xl mx-auto space-y-8">
+
+        <!-- ================================================================= -->
+        <!-- BANNIÈRE EN-TÊTE CONSOLE ADMIN -->
+        <!-- ================================================================= -->
+        <div class="bg-base-100 border border-base-300 rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+            <div class="absolute -top-20 -right-20 w-80 h-80 bg-[#059669]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
+                <!-- Identity -->
+                <div class="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
+                    <div class="relative">
+                        <div class="w-24 h-24 rounded-2xl bg-base-200 border-2 border-base-300 shadow-md flex items-center justify-center overflow-hidden shrink-0">
+                            {% if entreprise.logo %}
+                                <img src="{{ entreprise.logo.url }}" alt="{{ entreprise.nom_entreprise }}" class="w-full h-full object-cover">
+                            {% else %}
+                                <div class="text-3xl font-black text-[#059669]">
+                                    {{ entreprise.nom_entreprise|slice:":2"|upper }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <button class="absolute -bottom-2 -right-2 bg-base-100 border border-base-300 text-xs p-1.5 rounded-xl shadow-md hover:bg-base-200" title="Changer le logo">
+                            ✏️
+                        </button>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                            <h1 class="text-2xl sm:text-3xl font-black text-base-content tracking-tight">
+                                {{ entreprise.nom_entreprise }}
+                            </h1>
+                            <span class="badge bg-[#059669]/10 text-[#059669] font-extrabold text-xs uppercase px-2.5 py-1">
+                                Console Admin
+                            </span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-base-content/60 font-medium">
+                            Administrateur principal : <strong>{{ entreprise.user_principal.get_full_name|default:entreprise.user_principal.telephone }}</strong>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Palier & Upgrade CTA -->
+                <div class="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
+                    <div class="p-3.5 bg-base-200/60 border border-base-300 rounded-2xl flex items-center justify-between gap-4 w-full sm:w-auto">
+                        <div>
+                            <p class="text-xs text-base-content/50 uppercase font-black">Abonnement</p>
+                            <p class="text-sm font-extrabold text-[#059669] uppercase">{{ entreprise.get_palier_display }}</p>
+                        </div>
+                        <button @click="showUpgradeModal = true" 
+                                class="btn btn-sm bg-[#F97316] hover:bg-[#ea580c] text-white border-none rounded-xl font-bold shadow-md shadow-[#F97316]/20">
+                            ⭐ Chager de Palier
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NAVEGATION PAR ONGLETS (TABS) -->
+            <div class="flex items-center gap-2 mt-8 pt-6 border-t border-base-200 overflow-x-auto pb-1">
+                <button @click="activeTab = 'overview'" 
+                        :class="activeTab === 'overview' ? 'bg-[#059669] text-white' : 'bg-base-200/60 text-base-content/70 hover:bg-base-200'"
+                        class="btn btn-sm border-none rounded-xl font-bold transition-colors">
+                    📊 Vue d'ensemble
+                </button>
+                <button @click="activeTab = 'livreurs'" 
+                        :class="activeTab === 'livreurs' ? 'bg-[#059669] text-white' : 'bg-base-200/60 text-base-content/70 hover:bg-base-200'"
+                        class="btn btn-sm border-none rounded-xl font-bold transition-colors">
+                    🛵 Flotte Livreurs ({{ entreprise.nb_livreurs_actuels }}/{% if entreprise.quota_livreurs %}{{ entreprise.quota_livreurs }}{% else %}À définir{% endif %})
+                </button>
+                <button @click="activeTab = 'admins'" 
+                        :class="activeTab === 'admins' ? 'bg-[#059669] text-white' : 'bg-base-200/60 text-base-content/70 hover:bg-base-200'"
+                        class="btn btn-sm border-none rounded-xl font-bold transition-colors">
+                    👥 Gestion Admins ({{ entreprise.nb_admins_actuels }}/{% if entreprise.quota_admins %}{{ entreprise.quota_admins }}{% else %}À définir{% endif %})
+                </button>
+                <button @click="activeTab = 'settings'" 
+                        :class="activeTab === 'settings' ? 'bg-[#059669] text-white' : 'bg-base-200/60 text-base-content/70 hover:bg-base-200'"
+                        class="btn btn-sm border-none rounded-xl font-bold transition-colors">
+                    ⚙️ Paramètres
+                </button>
+            </div>
+        </div>
+
+
+        <!-- ================================================================= -->
+        <!-- TAB 1 : VUE D'ENSEMBLE & QUOTAS -->
+        <!-- ================================================================= -->
+        <div x-show="activeTab === 'overview'" class="space-y-6">
+
+            <!-- CARTES DE QUOTAS (GAUGES ET PROGRESSION) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Quota Livreurs -->
+                <div class="bg-base-100 border border-base-300 rounded-3xl p-6 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="space-y-0.5">
+                            <h3 class="text-sm font-black text-base-content">Quota Flotte Livreurs</h3>
+                            <p class="text-xs text-base-content/60">Comptes livreurs actifs rattachés</p>
+                        </div>
+                        <span class="text-2xl">🛵</span>
+                    </div>
+
+                    <!-- Calculateur de progression -->
+                    <div class="space-y-2">
+                        {% if entreprise.quota_livreurs %}
+                            <div class="flex justify-between text-xs font-bold">
+                                <span>{{ entreprise.nb_livreurs_actuels }} utilisés</span>
+                                <span>{{ entreprise.quota_livreurs }} max</span>
+                            </div>
+                            <progress class="progress progress-success w-full h-3" value="{{ entreprise.nb_livreurs_actuels }}" max="{{ entreprise.quota_livreurs }}"></progress>
+                        {% else %}
+                            <p class="text-xs text-base-content/60">Choisissez un palier pour définir le quota de livreurs.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="pt-2 flex items-center justify-between">
+                        {% if not entreprise.quota_livreurs %}
+                            <span class="text-xs font-semibold text-base-content/60">Aucun palier sélectionné</span>
+                            <button @click="showUpgradeModal = true" class="btn btn-xs bg-[#F97316] text-white hover:bg-[#ea580c] border-none rounded-lg font-bold">
+                                Choisir un palier
+                            </button>
+                        {% elif entreprise.peut_ajouter_livreur %}
+                            <span class="text-xs font-semibold text-[#059669]">✅ Emplacement(s) disponible(s)</span>
+                            <button @click="showAddLivreurModal = true" class="btn btn-xs bg-[#059669] text-white hover:bg-[#047857] border-none rounded-lg font-bold">
+                                + Ajouter
+                            </button>
+                        {% else %}
+                            <span class="text-xs font-semibold text-rose-500">⚠️ Quota maximum atteint</span>
+                            <button @click="showUpgradeModal = true" class="btn btn-xs bg-[#F97316] text-white hover:bg-[#ea580c] border-none rounded-lg font-bold">
+                                Augmenter Quota
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Quota Administrateurs -->
+                <div class="bg-base-100 border border-base-300 rounded-3xl p-6 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="space-y-0.5">
+                            <h3 class="text-sm font-black text-base-content">Quota Équipe Admin</h3>
+                            <p class="text-xs text-base-content/60">Gestionnaires secondaires</p>
+                        </div>
+                        <span class="text-2xl">🔑</span>
+                    </div>
+
+                    <div class="space-y-2">
+                        {% if entreprise.quota_admins %}
+                            <div class="flex justify-between text-xs font-bold">
+                                <span>{{ entreprise.nb_admins_actuels }} utilisés</span>
+                                <span>{{ entreprise.quota_admins }} max</span>
+                            </div>
+                            <progress class="progress progress-warning w-full h-3" value="{{ entreprise.nb_admins_actuels }}" max="{{ entreprise.quota_admins }}"></progress>
+                        {% else %}
+                            <p class="text-xs text-base-content/60">Choisissez un palier pour définir le quota d'administrateurs.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="pt-2 flex items-center justify-between">
+                        {% if not entreprise.quota_admins %}
+                            <span class="text-xs font-semibold text-base-content/60">Aucun palier sélectionné</span>
+                            <button @click="showUpgradeModal = true" class="btn btn-xs bg-[#F97316] text-white hover:bg-[#ea580c] border-none rounded-lg font-bold">
+                                Choisir un palier
+                            </button>
+                        {% elif entreprise.peut_ajouter_admin %}
+                            <span class="text-xs font-semibold text-[#059669]">✅ Emplacement(s) disponible(s)</span>
+                            <button @click="showAddAdminModal = true" class="btn btn-xs bg-[#059669] text-white hover:bg-[#047857] border-none rounded-lg font-bold">
+                                + Ajouter Admin
+                            </button>
+                        {% else %}
+                            <span class="text-xs font-semibold text-rose-500">⚠️ Quota maximum atteint</span>
+                            <button @click="showUpgradeModal = true" class="btn btn-xs bg-[#F97316] text-white hover:bg-[#ea580c] border-none rounded-lg font-bold">
+                                Augmenter Quota
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- APERÇU RAPIDE FLOTTE -->
+            <div class="bg-base-100 border border-base-300 rounded-3xl p-6 shadow-sm space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xs font-black uppercase tracking-wider text-[#059669]">
+                        Aperçu Récent de la Flotte
+                    </h2>
+                    <button @click="activeTab = 'livreurs'" class="text-xs font-bold text-[#059669] hover:underline">
+                        Voir tout →
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="table table-sm w-full">
+                        <thead>
+                            <tr class="border-b border-base-200 text-xs text-base-content/60">
+                                <th>Livreur</th>
+                                <th>Téléphone</th>
+                                <th>Statut</th>
+                                <th>Date d'ajout</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for livreur in entreprise.livreurs.all|slice:":5" %}
+                                <tr class="hover:bg-base-200/40">
+                                    <td class="font-bold text-xs">{{ livreur.user.get_full_name|default:livreur.user.telephone }}</td>
+                                    <td class="text-xs font-mono">{{ livreur.user.telephone }}</td>
+                                    <td>
+                                        {% if livreur.actif %}
+                                            <span class="badge badge-success badge-xs font-bold text-white">Actif</span>
+                                        {% else %}
+                                            <span class="badge badge-ghost badge-xs font-bold">Inactif</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-xs text-base-content/60">{{ livreur.date_embauche|date:"d/m/Y" }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-6 text-xs text-base-content/50 italic">
+                                        Aucun livreur actuellement enregistré dans votre flotte.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- ================================================================= -->
+        <!-- TAB 2 : GESTION DES LIVREURS -->
+        <!-- ================================================================= -->
+        <div x-show="activeTab === 'livreurs'" class="space-y-6" x-cloak>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-base-100 p-6 rounded-3xl border border-base-300">
+                <div>
+                    <h2 class="text-lg font-black text-base-content">Gestion des Livreurs</h2>
+                    <p class="text-xs text-base-content/60">Inscrivez et supervisez les livreurs de votre entreprise.</p>
+                </div>
+
+                {% if not entreprise.quota_livreurs %}
+                    <button @click="showUpgradeModal = true" class="btn btn-sm bg-[#F97316] text-white hover:bg-[#ea580c] border-none rounded-xl font-bold shadow-md">
+                        Choisir un palier pour ajouter des livreurs
+                    </button>
+                {% elif entreprise.peut_ajouter_livreur %}
+                    <button @click="showAddLivreurModal = true" class="btn btn-sm bg-[#059669] text-white hover:bg-[#047857] border-none rounded-xl font-bold shadow-md">
+                        + Nouveau Livreur
+                    </button>
+                {% else %}
+                    <button @click="showUpgradeModal = true" class="btn btn-sm bg-[#F97316] text-white hover:bg-[#ea580c] border-none rounded-xl font-bold shadow-md">
+                        🔒 Quota atteint (Passer au palier supérieur)
+                    </button>
+                {% endif %}
+            </div>
+
+            <!-- LISTE COMPLÈTE LIVREURS -->
+            <div id="livreurs-list-container" class="bg-base-100 border border-base-300 rounded-3xl p-6 shadow-sm">
+                <div class="overflow-x-auto">
+                    <table class="table w-full">
+                        <thead>
+                            <tr class="border-b border-base-200 text-xs text-base-content/60">
+                                <th>Nom & Prénom</th>
+                                <th>Téléphone</th>
+                                <th>Statut</th>
+                                <th>Engins / Permis</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for livreur in entreprise.livreurs.all %}
+                                <tr class="hover:bg-base-200/40">
+                                    <td class="font-bold text-sm">
+                                        {{ livreur.user.get_full_name|default:"Non renseigné" }}
+                                    </td>
+                                    <td class="font-mono text-xs">{{ livreur.user.telephone }}</td>
+                                    <td>
+                                        {% if livreur.actif %}
+                                            <span class="badge bg-[#059669]/10 text-[#059669] font-bold border-none text-xs">Actif</span>
+                                        {% else %}
+                                            <span class="badge bg-rose-500/10 text-rose-600 font-bold border-none text-xs">Inactif</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-xs text-base-content/70">
+                                        {{ livreur.moyen_transport|default:"Non spécifié" }}
+                                    </td>
+                                    <td class="text-right">
+                                        <button class="btn btn-ghost btn-xs text-rose-500 hover:bg-rose-50 rounded-lg">
+                                            Désactiver
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-10 text-xs text-base-content/50">
+                                        Aucun livreur associé à cette entreprise.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================================================================= -->
+        <!-- TAB 3 : GESTION DES ADMINS SECONDAIRES -->
+        <!-- ================================================================= -->
+        <div x-show="activeTab === 'admins'" class="space-y-6" x-cloak>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-base-100 p-6 rounded-3xl border border-base-300">
+                <div>
+                    <h2 class="text-lg font-black text-base-content">Administrateurs de l'Entreprise</h2>
+                    <p class="text-xs text-base-content/60">Membres autorisés à gérer la plateforme d'entreprise.</p>
+                </div>
+
+                {% if not entreprise.quota_admins %}
+                    <button @click="showUpgradeModal = true" class="btn btn-sm bg-[#F97316] text-white hover:bg-[#ea580c] border-none rounded-xl font-bold shadow-md">
+                        Choisir un palier pour ajouter des administrateurs
+                    </button>
+                {% elif entreprise.peut_ajouter_admin %}
+                    <button @click="showAddAdminModal = true" class="btn btn-sm bg-[#059669] text-white hover:bg-[#047857] border-none rounded-xl font-bold shadow-md">
+                        + Ajouter un Administrateur
+                    </button>
+                {% else %}
+                    <button @click="showUpgradeModal = true" class="btn btn-sm bg-[#F97316] text-white hover:bg-[#ea580c] border-none rounded-xl font-bold shadow-md">
+                        🔒 Quota d'admins atteint
+                    </button>
+                {% endif %}
+            </div>
+
+            <!-- TABLEAU ADMINS -->
+            <div id="admins-list-container" class="bg-base-100 border border-base-300 rounded-3xl p-6 shadow-sm">
+                <div class="overflow-x-auto">
+                    <table class="table w-full">
+                        <thead>
+                            <tr class="border-b border-base-200 text-xs text-base-content/60">
+                                <th>Membre</th>
+                                <th>Rôle</th>
+                                <th>Téléphone</th>
+                                <th>Ajouté par</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Admin Principal -->
+                            <tr class="bg-[#059669]/5 font-semibold">
+                                <td class="font-bold text-sm">
+                                    {{ entreprise.user_principal.get_full_name|default:entreprise.user_principal.telephone }}
+                                </td>
+                                <td><span class="badge bg-[#059669] text-white text-xs font-bold">Principal (Owner)</span></td>
+                                <td class="font-mono text-xs">{{ entreprise.user_principal.telephone }}</td>
+                                <td class="text-xs text-base-content/50">— (Créateur)</td>
+                                <td class="text-right text-xs text-base-content/40 italic">Inamovible</td>
+                            </tr>
+
+                            <!-- Membres Admins Secondaires -->
+                            {% for membre in entreprise.membres_admin.all %}
+                                <tr class="hover:bg-base-200/40">
+                                    <td class="font-bold text-sm">
+                                        {{ membre.user.get_full_name|default:membre.user.telephone }}
+                                    </td>
+                                    <td><span class="badge badge-ghost text-xs font-bold">Admin Secondaire</span></td>
+                                    <td class="font-mono text-xs">{{ membre.user.telephone }}</td>
+                                    <td class="text-xs text-base-content/70">
+                                        {{ membre.ajoute_par.get_full_name|default:membre.ajoute_par.telephone }}
+                                    </td>
+                                    <td class="text-right">
+                                        <button class="btn btn-ghost btn-xs text-rose-500 hover:bg-rose-50 rounded-lg">
+                                            Retirer
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ================================================================= -->
+        <!-- TAB 4 : PARAMÈTRES / ÉDITION -->
+        <!-- ================================================================= -->
+        <div x-show="activeTab === 'settings'" class="space-y-6" x-cloak>
+            <div class="bg-base-100 border border-base-300 rounded-3xl p-6 shadow-sm space-y-6">
+                <h2 class="text-lg font-black text-base-content border-b border-base-200 pb-3">
+                    Modifier les informations de l'entreprise
+                </h2>
+
+                <form hx-post="#" 
+                      hx-swap="none"
+                      enctype="multipart/form-data" 
+                      class="space-y-5 max-w-2xl">
+                    {% csrf_token %}
+
+                    <div class="form-control">
+                        <label class="label py-1">
+                            <span class="label-text text-xs font-bold uppercase text-base-content/70">Nom de l'entreprise</span>
+                        </label>
+                        <input type="text" name="nom_entreprise" value="{{ entreprise.nom_entreprise }}" class="input input-bordered rounded-xl focus:border-[#059669]" required />
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label py-1">
+                            <span class="label-text text-xs font-bold uppercase text-base-content/70">Changer le logo</span>
+                        </label>
+                        <input type="file" name="logo" class="file-input file-input-bordered file-input-success rounded-xl text-xs" />
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="submit" class="btn bg-[#059669] hover:bg-[#047857] text-white border-none rounded-xl font-bold">
+                            Enregistrer les modifications
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- MODALE : AJOUTER UN ADMINISTRATEUR -->
+    <!-- ================================================================= -->
+    <div x-show="showAddAdminModal" 
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" 
+         x-cloak>
+        <div class="bg-base-100 border border-base-300 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5"
+             @click.away="showAddAdminModal = false">
+            
+            <div class="flex items-center justify-between border-b border-base-200 pb-3">
+                <h3 class="text-lg font-black text-base-content">Ajouter un Admin</h3>
+                <button @click="showAddAdminModal = false" class="btn btn-sm btn-circle btn-ghost">✕</button>
+            </div>
+
+            <form hx-post="#" 
+                  hx-target="#admins-list-container" 
+                  hx-swap="innerHTML"
+                  @htmx:after-request="showAddAdminModal = false"
+                  class="space-y-4">
+                {% csrf_token %}
+
+                <div class="form-control">
+                    <label class="label py-1"><span class="label-text text-xs font-bold">Téléphone du membre</span></label>
+                    <input type="text" name="telephone" placeholder="Numéro de téléphone" class="input input-bordered rounded-xl" required />
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="form-control">
+                        <label class="label py-1"><span class="label-text text-xs font-bold">Prénom</span></label>
+                        <input type="text" name="first_name" placeholder="Prénom" class="input input-bordered rounded-xl" required />
+                    </div>
+                    <div class="form-control">
+                        <label class="label py-1"><span class="label-text text-xs font-bold">Nom</span></label>
+                        <input type="text" name="last_name" placeholder="Nom" class="input input-bordered rounded-xl" required />
+                    </div>
+                </div>
+
+                <div class="form-control">
+                    <label class="label py-1"><span class="label-text text-xs font-bold">Mot de passe temporaire</span></label>
+                    <input type="password" name="password" placeholder="Mettre un mot de passe" class="input input-bordered rounded-xl" required />
+                </div>
+
+                <div class="pt-3 flex gap-2">
+                    <button type="button" @click="showAddAdminModal = false" class="btn btn-ghost border-base-300 flex-1 rounded-xl">Annuler</button>
+                    <button type="submit" class="btn bg-[#059669] text-white hover:bg-[#047857] border-none flex-1 rounded-xl font-bold">Créer l'Admin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- MODALE : AJOUTER UN LIVREUR À LA FLOTTE -->
+    <!-- ================================================================= -->
+    <div x-show="showAddLivreurModal" 
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" 
+         x-cloak>
+        <div class="bg-base-100 border border-base-300 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5"
+             @click.away="showAddLivreurModal = false">
+            
+            <div class="flex items-center justify-between border-b border-base-200 pb-3">
+                <h3 class="text-lg font-black text-base-content">Inscrire un Livreur dans la flotte</h3>
+                <button @click="showAddLivreurModal = false" class="btn btn-sm btn-circle btn-ghost">✕</button>
+            </div>
+
+            <form hx-post="#" 
+                  hx-target="#livreurs-list-container" 
+                  hx-swap="innerHTML"
+                  @htmx:after-request="showAddLivreurModal = false"
+                  class="space-y-4">
+                {% csrf_token %}
+
+                <div class="form-control">
+                    <label class="label py-1"><span class="label-text text-xs font-bold">Numéro Téléphone Livreur</span></label>
+                    <input type="text" name="telephone" placeholder="Numéro du livreur" class="input input-bordered rounded-xl" required />
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="form-control">
+                        <label class="label py-1"><span class="label-text text-xs font-bold">Prénom</span></label>
+                        <input type="text" name="first_name" placeholder="Prénom" class="input input-bordered rounded-xl" required />
+                    </div>
+                    <div class="form-control">
+                        <label class="label py-1"><span class="label-text text-xs font-bold">Nom</span></label>
+                        <input type="text" name="last_name" placeholder="Nom" class="input input-bordered rounded-xl" required />
+                    </div>
+                </div>
+
+                <div class="form-control">
+                    <label class="label py-1"><span class="label-text text-xs font-bold">Mot de passe temporaire</span></label>
+                    <input type="password" name="password" placeholder="Mot de passe" class="input input-bordered rounded-xl" required />
+                </div>
+
+                <div class="pt-3 flex gap-2">
+                    <button type="button" @click="showAddLivreurModal = false" class="btn btn-ghost border-base-300 flex-1 rounded-xl">Annuler</button>
+                    <button type="submit" class="btn bg-[#059669] text-white hover:bg-[#047857] border-none flex-1 rounded-xl font-bold">Enregistrer Livreur</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- ================================================================= -->
+    <!-- MODALE : CHANGER DE PALIER / UPGRADE -->
+    <!-- ================================================================= -->
+    <div x-show="showUpgradeModal" 
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" 
+         x-cloak>
+        <div class="bg-base-100 border border-base-300 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-6"
+             @click.away="showUpgradeModal = false">
+            
+            <div class="flex items-center justify-between border-b border-base-200 pb-3">
+                <h3 class="text-xl font-black text-base-content">Augmenter les Capacités de votre Entreprise</h3>
+                <button @click="showUpgradeModal = false" class="btn btn-sm btn-circle btn-ghost">✕</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Standard -->
+                <div class="p-4 rounded-2xl border border-base-300 bg-base-200/40 space-y-3 text-center">
+                    <h4 class="font-extrabold text-sm">Standard</h4>
+                    <p class="text-xs text-base-content/60">5 Livreurs max</p>
+                    <p class="text-xs text-base-content/60">1 Admin</p>
+                    {% if entreprise.palier == 'standard' %}
+                        <span class="badge badge-success text-white text-xs font-bold">Palier Actuel</span>
+                    {% endif %}
+                </div>
+
+                <!-- Pro -->
+                <div class="p-4 rounded-2xl border-2 border-[#059669] bg-[#059669]/5 space-y-3 text-center">
+                    <h4 class="font-extrabold text-sm text-[#059669]">Pro</h4>
+                    <p class="text-xs text-base-content/70">20 Livreurs max</p>
+                    <p class="text-xs text-base-content/70">3 Admins</p>
+                    {% if entreprise.palier == 'pro' %}
+                        <span class="badge badge-success text-white text-xs font-bold">Palier Actuel</span>
+                    {% else %}
+                        <button class="btn btn-xs bg-[#059669] text-white border-none rounded-lg font-bold w-full">Choisir Pro</button>
+                    {% endif %}
+                </div>
+
+                <!-- Premium -->
+                <div class="p-4 rounded-2xl border-2 border-[#F97316] bg-[#F97316]/5 space-y-3 text-center">
+                    <h4 class="font-extrabold text-sm text-[#F97316]">Premium</h4>
+                    <p class="text-xs text-base-content/70">Livreurs Illimités</p>
+                    <p class="text-xs text-base-content/70">10 Admins</p>
+                    {% if entreprise.palier == 'premium' %}
+                        <span class="badge badge-warning text-white text-xs font-bold">Palier Actuel</span>
+                    {% else %}
+                        <button class="btn btn-xs bg-[#F97316] text-white border-none rounded-lg font-bold w-full">Choisir Premium</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

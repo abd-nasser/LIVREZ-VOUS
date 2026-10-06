@@ -214,7 +214,7 @@ class InscriptionEntrepriseForm(forms.ModelForm):
 
     class Meta:
         model = Entreprise
-        fields = ['nom_entreprise', 'logo', 'zones_couvertes', 'palier']
+        fields = ['nom_entreprise', 'logo', 'zones_couvertes']
         widgets = {
             'zones_couvertes': forms.CheckboxSelectMultiple(),  # Choix des zones sur la carte/liste
         }

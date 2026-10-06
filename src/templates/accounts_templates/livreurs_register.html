@@ -165,7 +165,7 @@
                             {% if form.type_vehicule.errors %}<span class="text-error text-xs mt-1">{{ form.type_vehicule.errors.0 }}</span>{% endif %}
                         </div>
                     </div>
-
+                    <div id="register-result-zone" class="mb-4"></div>
                     <!-- SECTION 3 : VÉRIFICATION D'IDENTITÉ (UPLOADS AVEC PREVIEW ALPINE) -->
                     <div class="space-y-4 pt-2" x-data="{ photoProfil: null, cniRecto: null, cniVerso: null, photoSelfie: null }">
                         <div class="flex items-center justify-between border-b border-base-200 pb-2">
@@ -269,7 +269,7 @@
                             <p class="text-sm text-base-content/70">Vos informations et documents sont en cours de traitement.</p>
                         </div>
                     </div>
-                    <div id="register-result-zone" class="mb-4"></div>
+                    
                     <!-- SUBMIT BUTTON -->
                     <div class="pt-4">
                         <button type="submit" class="btn bg-[#F97316] hover:bg-[#C2410C] text-white border-none w-full btn-lg rounded-2xl font-bold shadow-xl shadow-[#F97316]/25 transition-all transform active:scale-95">

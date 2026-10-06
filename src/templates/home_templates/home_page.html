@@ -18,7 +18,7 @@
 
                 <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
                     <a href="#vision" class="hover:text-[#059669] transition-colors">La Vision</a>
-                    <a href="#" class="hover:text-[#059669] transition-colors">Entreprises de livraison</a>
+                    <a href="{% url 'accounts_app:inscription-entreprises' %}" class="hover:text-[#059669] transition-colors">Entreprises de livraison</a>
                     <a href="{% url 'accounts_app:inscription-livreurs' %}" class="hover:text-[#059669] transition-colors">Devenir Livreur</a>
                 </nav>
                 
@@ -43,7 +43,7 @@
                 {% elif user.is_authenticated and user.role == "entreprise" %}
                 <div class="flex items-center gap-3">
                     <a class="btn bg-[#059669] hover:bg-[#047857] text-white btn-sm sm:btn-md rounded-xl border-none shadow-md shadow-[#059669]/20"
-                       href="{% url 'accounts_app:entreprise-profil' user.entreprise_profil.pk %}">Mon espace</a>
+                       href="{% url 'entreprises_app:entreprise-profil' user.entreprise_profil.pk %}">Mon espace</a>
                     <form method="post" action="{% url 'accounts_app:logout' %}">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-outline btn-sm sm:btn-md rounded-xl">Déconnexion</button>
@@ -90,7 +90,7 @@
                     <a href="{% url 'accounts_app:inscription-clients' %}" class="btn bg-[#059669] hover:bg-[#047857] text-white border-none btn-lg rounded-2xl w-full sm:w-auto shadow-xl shadow-[#059669]/20 font-bold">
                         Créer un compte client
                     </a>
-                    <a href="#" class="btn bg-[#F97316] hover:bg-[#C2410C] text-white border-none btn-lg rounded-2xl w-full sm:w-auto shadow-xl shadow-[#F97316]/20 font-bold">
+                    <a href="{% url 'accounts_app:inscription-entreprises' %}" class="btn bg-[#F97316] hover:bg-[#C2410C] text-white border-none btn-lg rounded-2xl w-full sm:w-auto shadow-xl shadow-[#F97316]/20 font-bold">
                         Inscrire mon entreprise
                     </a>
                     <a href="{% url 'accounts_app:inscription-livreurs' %}" class="btn btn-outline border-[#059669] text-[#059669] hover:bg-[#059669] hover:border-[#059669] hover:text-white btn-lg rounded-2xl w-full sm:w-auto">

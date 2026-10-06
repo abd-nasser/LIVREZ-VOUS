@@ -4,6 +4,7 @@ from zones_app.models import Zone
 
 class Entreprise(models.Model):
     PALIER_CHOICES = [
+        ('pas_defini', 'Pas defini'),
         ('standard', 'Standard'),
         ('pro', 'Pro'),
         ('premium', "Premium")
@@ -13,7 +14,7 @@ class Entreprise(models.Model):
     nom_entreprise = models.CharField(max_length=150)
     logo = models.ImageField(upload_to='entreprises/logos', null=True, blank=True)
     zones_couvertes = models.ManyToManyField(Zone, related_name='entreprises', blank=True)
-    palier = models.CharField(max_length=20, choices=PALIER_CHOICES, default='standard')
+    palier = models.CharField(max_length=20, choices=PALIER_CHOICES, default='pas_defini')
     date_creation = models.DateTimeField(auto_now_add=True)
     
     QUOTAS_LIVREURS = {
@@ -30,11 +31,11 @@ class Entreprise(models.Model):
     
     @property
     def quota_livreurs(self):
-        return self.QUOTAS_LIVREURS[self.palier]
+        return self.QUOTAS_LIVREURS.get(self.palier, 0)
     
     @property
     def quota_admins(self):
-        return self.QUOTAS_ADMINS[self.palier]
+        return self.QUOTAS_ADMINS.get(self.palier, 0)
     
     @property
     def nb_livreurs_actuels(self):

@@ -1,74 +1,56 @@
 {% extends 'base.html' %}
 
-{% block title %}Inscription Client | Vos avantages exclusifs{% endblock %}
+{% block title %}Inscription Entreprise | Partenaire de Livraison{% endblock %}
 
 {% block content %}
-  <!-- Header Retour / Branding -->
-       
 <div class="min-h-[85vh] flex items-center justify-center p-4 sm:p-6 lg:p-8" 
      x-data="{ 
          showPassword: false, 
-         showConfirmPassword: false,
-         photoProfil: null
+         showConfirmPassword: false 
      }">
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-     <div class="mb-8 flex items-center justify-between">
-            <a href="{% url 'home_app:home-page' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-base-content/70 hover:text-[#059669] transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Retour à l'accueil
-            </a>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#059669]/10 border border-[#059669]/20 text-[#059669] text-xs font-bold">
-                <span class="w-2 h-2 rounded-full bg-[#059669] animate-ping"></span>
-                Inscriptions Ouvertes — Zone Ouagadougou
-            </div>
-        </div>
 
+    <!-- CARTE PRINCIPALE SPLIT (2 COLONNES B2B) -->
+    <div class="w-full max-w-6xl bg-base-100 border border-base-300 rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 relative">
         
-
-    <!-- CARTE PRINCIPALE SPLIT (2 COLONNES) -->
-    <div class="w-full max-w-5xl bg-base-100 border border-base-300 rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 relative">
-      
-        <!-- Effets lumineux d'arrière-plan (Glassmorphism) -->
-        <div class="absolute -top-20 -left-20 w-56 h-56 bg-[#059669]/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-20 -right-20 w-56 h-56 bg-[#F97316]/10 rounded-full blur-3xl pointer-events-none"></div>
+        <!-- Effets lumineux d'arrière-plan (Glassmorphism Accent) -->
+        <div class="absolute -top-20 -left-20 w-64 h-64 bg-[#059669]/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-20 -right-20 w-64 h-64 bg-[#F97316]/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <!-- ================================================================= -->
-        <!-- COLONNE GAUCHE : FORMULAIRE D'INSCRIPTION (7/12 colonnes sur desktop) -->
+        <!-- COLONNE GAUCHE : FORMULAIRE B2B (7/12 colonnes sur desktop) -->
         <!-- ================================================================= -->
         <div class="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-between relative z-10 border-b lg:border-b-0 lg:border-r border-base-200">
             <div>
                 <!-- En-tête de gauche -->
                 <div class="space-y-2 mb-8">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#059669]/10 text-[#059669] text-xs font-extrabold uppercase tracking-wider">
-                        <span>🚀 En quelques secondes</span>
+                        <span>🏢 Espace Partenaire & Entreprise</span>
                     </div>
                     <h1 class="text-2xl sm:text-3xl font-black text-base-content tracking-tight">
-                        Créer un compte client
+                        Inscrire votre entreprise
                     </h1>
                     <p class="text-xs sm:text-sm text-base-content/60 font-medium">
-                        Renseignez vos informations ci-dessous pour démarrer
+                        Digitalisez et gérez vos opérations de livraison en toute simplicité
                     </p>
                 </div>
 
                 <!-- CONTENEUR DU FORMULAIRE SWAPPÉ PAR HTMX -->
                 <div id="form-container" class="relative z-10">
-                    {% include 'partials/accounts/_clients_register_error_form.html' with inscription_client_form_errors=form %}
+                    {% include 'partials/accounts/_entreprises_register_error_form.html' with inscription_entreprise_form_errors=form %}
                 </div>
             </div>
 
             <!-- Pied de page / Lien Connexion -->
             <div class="mt-8 pt-6 border-t border-base-200 text-center text-xs sm:text-sm text-base-content/70">
-                Vous avez déjà un compte ? 
+                Vous avez déjà un compte professionnel ? 
                 <a href="{% url 'accounts_app:login' %}" class="font-bold text-[#059669] hover:underline hover:text-[#047857] transition-colors ml-1">
-                    Se connecter
+                    Se connecter à la console
                 </a>
             </div>
         </div>
 
         <!-- ================================================================= -->
-        <!-- COLONNE DROITE : LES AVANTAGES COMPTE CLIENT (5/12 colonnes) -->
+        <!-- COLONNE DROITE : AVANTAGES COMPTE ENTREPRISE (5/12 colonnes) -->
         <!-- ================================================================= -->
         <div class="lg:col-span-5 bg-gradient-to-br from-base-200/60 via-base-200/30 to-base-100 p-6 sm:p-10 flex flex-col justify-between relative overflow-hidden z-10">
             
@@ -76,25 +58,25 @@
                 <!-- Titre de la section avantages -->
                 <div class="space-y-2">
                     <h2 class="text-xl sm:text-2xl font-black text-base-content">
-                        Pourquoi nous rejoindre ?
+                        Boostez votre logistique
                     </h2>
                     <p class="text-xs sm:text-sm text-base-content/60 font-medium">
-                        Profitez d'une expérience de livraison repensée pour vous simplifier la vie.
+                        Une plateforme dédiée aux professionnels pour centraliser votre flotte et vos expéditions.
                     </p>
                 </div>
 
-                <!-- LISTE DES AVANTAGES -->
-                <div class="space-y-5">
+                <!-- LISTE DES AVANTAGES B2B -->
+                <div class="space-y-4">
                     
                     <!-- Avantage 1 -->
                     <div class="flex items-start gap-4 p-3.5 rounded-2xl bg-base-100/80 border border-base-300 shadow-sm backdrop-blur-sm transition-transform hover:-translate-y-0.5">
                         <div class="w-10 h-10 rounded-xl bg-[#059669]/10 text-[#059669] flex items-center justify-center shrink-0 text-xl font-bold">
-                            ⚡
+                            📊
                         </div>
                         <div class="space-y-0.5">
-                            <h3 class="text-sm font-bold text-base-content">Commandes Ultra-Rapides</h3>
+                            <h3 class="text-sm font-bold text-base-content">Tableau de bord centralisé</h3>
                             <p class="text-xs text-base-content/60 leading-relaxed">
-                                Passez vos demandes de course en 3 clics et trouvez un livreur disponible immédiatement.
+                                Suivez l'ensemble de vos courses, gérez vos livreurs dédiés et analysez vos performances.
                             </p>
                         </div>
                     </div>
@@ -102,12 +84,12 @@
                     <!-- Avantage 2 -->
                     <div class="flex items-start gap-4 p-3.5 rounded-2xl bg-base-100/80 border border-base-300 shadow-sm backdrop-blur-sm transition-transform hover:-translate-y-0.5">
                         <div class="w-10 h-10 rounded-xl bg-[#F97316]/10 text-[#F97316] flex items-center justify-center shrink-0 text-xl font-bold">
-                            📍
+                            🗺️
                         </div>
                         <div class="space-y-0.5">
-                            <h3 class="text-sm font-bold text-base-content">Suivi en Temps Réel</h3>
+                            <h3 class="text-sm font-bold text-base-content">Couverture Multi-Zones</h3>
                             <p class="text-xs text-base-content/60 leading-relaxed">
-                                Suivez l'itinéraire et la progression de votre colis étape par étape sur la carte.
+                                Définissez précisément vos zones d'intervention pour recevoir des demandes ciblées.
                             </p>
                         </div>
                     </div>
@@ -115,12 +97,12 @@
                     <!-- Avantage 3 -->
                     <div class="flex items-start gap-4 p-3.5 rounded-2xl bg-base-100/80 border border-base-300 shadow-sm backdrop-blur-sm transition-transform hover:-translate-y-0.5">
                         <div class="w-10 h-10 rounded-xl bg-[#059669]/10 text-[#059669] flex items-center justify-center shrink-0 text-xl font-bold">
-                            🛡️️
+                            🤝
                         </div>
                         <div class="space-y-0.5">
-                            <h3 class="text-sm font-bold text-base-content">Livreurs Vérifiés</h3>
+                            <h3 class="text-sm font-bold text-base-content">Facturation & Reporting</h3>
                             <p class="text-xs text-base-content/60 leading-relaxed">
-                                Tous nos livreurs partenaires sont certifiés pour garantir la sécurité de vos colis.
+                                Éditez vos reçus professionnels et téléchargez l'historique complet de vos dépenses.
                             </p>
                         </div>
                     </div>
@@ -128,12 +110,12 @@
                     <!-- Avantage 4 -->
                     <div class="flex items-start gap-4 p-3.5 rounded-2xl bg-base-100/80 border border-base-300 shadow-sm backdrop-blur-sm transition-transform hover:-translate-y-0.5">
                         <div class="w-10 h-10 rounded-xl bg-[#F97316]/10 text-[#F97316] flex items-center justify-center shrink-0 text-xl font-bold">
-                            💬
+                            🎧
                         </div>
                         <div class="space-y-0.5">
-                            <h3 class="text-sm font-bold text-base-content">Contact Direct</h3>
+                            <h3 class="text-sm font-bold text-base-content">Support Prioritaire B2B</h3>
                             <p class="text-xs text-base-content/60 leading-relaxed">
-                                Appelez ou discutez directement avec votre livreur en charge pour préciser vos instructions.
+                                Un gestionnaire de compte dédié pour répondre rapidement à vos besoins opérationnels.
                             </p>
                         </div>
                     </div>
@@ -141,21 +123,18 @@
                 </div>
             </div>
 
-            <!-- BADGE SOCIAL PROOF EN BAS -->
+            <!-- BADGE GARANTIE -->
             <div class="mt-8 pt-6 border-t border-base-300/60 flex items-center gap-3">
-                <div class="avatar-group -space-x-3 shrink-0">
-                    <div class="w-8 h-8 rounded-full border-2 border-base-100 bg-[#059669] text-white flex items-center justify-center text-xs font-extrabold">A</div>
-                    <div class="w-8 h-8 rounded-full border-2 border-base-100 bg-[#F97316] text-white flex items-center justify-center text-xs font-extrabold">K</div>
-                    <div class="w-8 h-8 rounded-full border-2 border-base-100 bg-base-300 text-base-content flex items-center justify-center text-xs font-extrabold">+</div>
+                <div class="w-10 h-10 rounded-full bg-[#059669] text-white flex items-center justify-center text-lg font-bold shrink-0 shadow-md shadow-[#059669]/20">
+                    ✓
                 </div>
                 <p class="text-xs font-semibold text-base-content/70">
-                    Rejoignez des centaines de clients satisfaits.
+                    Validation rapide du compte entreprise après vérification des informations.
                 </p>
             </div>
 
         </div>
 
-    </div>
     </div>
 </div>
 {% endblock %}

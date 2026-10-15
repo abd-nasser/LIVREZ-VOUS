@@ -190,7 +190,7 @@ class CreateClientView(CreateView):
         # ON RETARGET SUR LE BLOC FORMULAIRE SEULEMENT ET ON SWAP LE CONTENU
         response['HX-Retarget'] = '#form-container'
         response['HX-Reswap'] = 'innerHTML'
-        return response
+        return response #test
 
 
 def login_view(request):

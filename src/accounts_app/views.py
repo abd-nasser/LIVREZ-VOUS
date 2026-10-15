@@ -1,10 +1,17 @@
 import logging
 
 from django.contrib.auth import authenticate, login, logout as auth_logout
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db import transaction
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.generic import CreateView
+from .notifications import (
+    CredentialDeliveryError,
+    send_courier_credentials,
+    validate_credential_delivery_configuration,
+)
 from clients_app.models import Client
 from livreurs_app.models import Livreur
 from entreprises_app.models import Entreprise
@@ -13,6 +20,7 @@ from django.contrib.auth.decorators import login_required
 
 from .forms import (InscriptionEntrepriseForm, 
                     InscriptionLivreurForm, 
+                    InscriptionLivreurEntrepriseForm,
                     InscriptionClientForm)
 
 
@@ -81,6 +89,69 @@ class CreateLivreurView(CreateView):
         response['HX-Retarget'] = '#form-container'
         response['HX-Reswap'] = 'innerHTML'
         return response
+
+
+class CreateLivreurEntrepriseView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    form_class = InscriptionLivreurEntrepriseForm
+    model = Livreur
+    template_name = 'accounts_templates/livreur_entreprise_create.html'
+
+    def test_func(self):
+        user = self.request.user
+        if user.role != 'entreprise':
+            return False
+
+        try:
+            entreprise = user.entreprise_profil
+        except Entreprise.DoesNotExist:
+            return False
+
+        return entreprise.peut_ajouter_livreur
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['entreprise'] = self.request.user.entreprise_profil
+        return context
+
+    def form_valid(self, form):
+        try:
+            validate_credential_delivery_configuration()
+        except CredentialDeliveryError as error:
+            form.add_error(None, str(error))
+            return self.form_invalid(form)
+
+        livreur = form.save()
+        try:
+            send_courier_credentials(
+                livreur.user,
+                form.generated_username,
+                form.generated_password,
+            )
+        except CredentialDeliveryError as error:
+            logger.error(
+                "Could not deliver credentials for courier user %s: %s",
+                livreur.user_id,
+                error,
+            )
+            form.add_error(
+                None,
+                "Le compte a été créé, mais au moins un envoi des identifiants "
+                "a échoué. Contactez le support avant de relancer la création.",
+            )
+            return self.form_invalid(form)
+
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse(
+            'entreprises_app:entreprise-profil',
+            kwargs={'pk': self.request.user.entreprise_profil.pk},
+        )
     
 class CreateClientView(CreateView):
     form_class = InscriptionClientForm

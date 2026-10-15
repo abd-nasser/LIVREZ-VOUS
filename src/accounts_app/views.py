@@ -143,15 +143,29 @@ class CreateLivreurEntrepriseView(LoginRequiredMixin, UserPassesTestMixin, Creat
                 "Le compte a été créé, mais au moins un envoi des identifiants "
                 "a échoué. Contactez le support avant de relancer la création.",
             )
-            return self.form_invalid(form)
+            return render(self.request, 'partials/accounts/_livreur_entreprise_create_error.html', {
+                'form': form,
+            })
 
-        return redirect(self.get_success_url())
+        response = render(self.request, 'partials/accounts/_livreur_entreprise_create_success.html', {
+                        'success': True,
+                        'Title': "Bienvenue",
+                        'message': "Félicitations, vous faites désormais partie de la plus grande communauté de livreurs !"
+                    })
+        response['HX-Trigger'] = 'livreur-entreprise-register-success'
+        return response
+    
+    def form_invalid(self, form):
+        # En cas d'ERREUR : On renvoie le formulaire avec ses erreurs
+        response = render(self.request, 'partials/accounts/_livreur_entreprise_create_error.html', {
+            'form': form, # Ton formulaire avec ses erreurs nettoyées
+        })
+        # ON RETARGET SUR LE BLOC FORMULAIRE SEULEMENT ET ON SWAP LE CONTENU
+        response['HX-Retarget'] = '#form-container'
+        response['HX-Reswap'] = 'innerHTML'
+        return response
 
-    def get_success_url(self):
-        return reverse(
-            'entreprises_app:entreprise-profil',
-            kwargs={'pk': self.request.user.entreprise_profil.pk},
-        )
+   
     
 class CreateClientView(CreateView):
     form_class = InscriptionClientForm

@@ -309,9 +309,11 @@ class InscriptionLivreurEntrepriseForm(forms.ModelForm):
     def save(self, commit=True):  # Crée le User puis le profil Livreur associé.
         """Crée le compte et le profil dans une transaction atomique."""
         livreur = super().save(commit=False)  # Construit le profil sans l'enregistrer avant son association à un User.
+        
         username_base = slugify(
             f"{self.cleaned_data['first_name']}.{self.cleaned_data['last_name']}"
         )[:21] or 'livreur'  # Normalise les noms pour en faire une base de username courte et lisible.
+        
         username = f"{username_base}-{uuid4().hex[:8]}"  # Ajoute un suffixe aléatoire pour rendre le username unique.
         while User.objects.filter(username=username).exists():
             username = f"{username_base}-{uuid4().hex[:8]}"  # Génère un autre suffixe si une collision très improbable survient.
@@ -325,6 +327,9 @@ class InscriptionLivreurEntrepriseForm(forms.ModelForm):
             email=self.cleaned_data['email'],  # Enregistre son adresse e-mail obligatoire.
             role='livreur',  # Attribue au compte le rôle requis pour accéder aux fonctions livreur.
         )
+        print(f""" mot de passe  {password}
+              username {username}
+              """)
         user.set_password(password)  # Hache le mot de passe avant son stockage en base de données.
         livreur.user = user  # Relie le profil livreur au compte qui vient d'être préparé.
         livreur.entreprise = self.user.entreprise_profil  # Rattache le livreur à l'entreprise de l'administrateur connecté.

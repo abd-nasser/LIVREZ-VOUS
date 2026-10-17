@@ -1,44 +1,121 @@
 {% extends 'base.html' %}
 
-{% block title %}Ajouter un livreur | {{ entreprise.nom_entreprise }}{% endblock %}
+{% block title %}Ajouter un Livreur | Flotte {{ entreprise.nom_entreprise }}{% endblock %}
 
 {% block content %}
-<main class="min-h-screen bg-base-200/40 px-4 py-10">
-    <section class="mx-auto max-w-2xl rounded-3xl border border-base-300 bg-base-100 p-6 shadow-xl sm:p-10">
-        <a href="{% url 'entreprises_app:entreprise-profil' entreprise.pk %}" class="text-sm font-bold text-[#059669] hover:underline">
-            &larr; Retour au tableau de bord
-        </a>
-        <h1 class="mt-5 text-2xl font-extrabold">Ajouter un livreur</h1>
-        <p class="mt-2 text-sm text-base-content/70">
-            Le nouveau compte sera rattaché à {{ entreprise.nom_entreprise }}.
-            Un nom d'utilisateur et un mot de passe seront générés et envoyés par e-mail et WhatsApp.
-        </p>
+<div class="min-h-[85vh] flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8" 
+     x-data="{ showPassword: false }">
 
-        <form method="post" enctype="multipart/form-data" class="mt-8 space-y-5">
-            {% csrf_token %}
-            {% if form.non_field_errors %}
-                <div class="alert alert-error">{{ form.non_field_errors }}</div>
-            {% endif %}
-            {% for field in form %}
-                <div class="form-control">
-                    <label class="label" for="{{ field.id_for_label }}">
-                        <span class="label-text font-bold">{{ field.label }}</span>
-                    </label>
-                    {{ field }}
-                    {% for error in field.errors %}
-                        <span class="mt-1 text-sm text-error">{{ error }}</span>
-                    {% endfor %}
+    <div class="mb-8 flex w-full max-w-6xl items-center justify-between">
+        <a href="{% url 'entreprises_app:entreprise-profil' entreprise.pk %}" class="inline-flex items-center gap-2 text-sm font-semibold text-base-content/70 hover:text-[#059669] transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Retourner au tableau de bord entreprise
+        </a>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#059669]/10 border border-[#059669]/20 text-[#059669] text-xs font-bold">
+            <span class="w-2 h-2 rounded-full bg-[#059669] animate-ping" aria-hidden="true"></span>
+            <span>Extension de Flotte</span>
+        </div>
+    </div>
+
+    <!-- CARTE PRINCIPALE SPLIT (2 COLONNES) -->
+    <div class="w-full max-w-6xl bg-base-100 border border-base-300 rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 relative">
+        
+        <!-- Effets lumineux d'arrière-plan (Glassmorphism) -->
+        <div class="absolute -top-20 -left-20 w-64 h-64 bg-[#059669]/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-20 -right-20 w-64 h-64 bg-[#F97316]/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- ================================================================= -->
+        <!-- COLONNE GAUCHE : FORMULAIRE D'AJOUT (7/12 colonnes sur desktop) -->
+        <!-- ================================================================= -->
+        <div class="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-between relative z-10 border-b lg:border-b-0 lg:border-r border-base-200">
+            <div>
+                <!-- En-tête de gauche -->
+                <div class="space-y-2 mb-8">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#059669]/10 text-[#059669] text-xs font-extrabold uppercase tracking-wider">
+                        <span>🛵 Extension de Flotte</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-black text-base-content tracking-tight">
+                        Enrôler un nouveau livreur
+                    </h1>
+                    <p class="text-xs sm:text-sm text-base-content/60 font-medium">
+                        Ajoutez un livreur rattaché à <strong class="text-base-content">{{ entreprise.nom_entreprise }}</strong>
+                    </p>
                 </div>
-            {% endfor %}
-            <div class="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
-                <a href="{% url 'entreprises_app:entreprise-profil' entreprise.pk %}" class="btn btn-ghost rounded-xl">
-                    Annuler
-                </a>
-                <button type="submit" class="btn rounded-xl border-none bg-[#059669] font-bold text-white hover:bg-[#047857]">
-                    Créer le compte livreur
-                </button>
+
+                <!-- CONTENEUR DU FORMULAIRE SWAPPÉ PAR HTMX -->
+                <div id="form-container" class="relative z-10">
+                    {% include 'partials/accounts/_livreur_entreprise_create_error.html' %}
+                </div>
             </div>
-        </form>
-    </section>
-</main>
+
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- COLONNE DROITE : AVANTAGES & QUOTAS DE LA FLOTTE (5/12 colonnes) -->
+        <!-- ================================================================= -->
+        <div class="lg:col-span-5 bg-gradient-to-br from-base-200/60 via-base-200/30 to-base-100 p-6 sm:p-10 flex flex-col justify-between relative overflow-hidden z-10">
+            
+            <div class="space-y-8">
+                <!-- Titre de la section -->
+                <div class="space-y-2">
+                    <h2 class="text-xl sm:text-2xl font-black text-base-content">
+                        Gestion de Flotte
+                    </h2>
+                    <p class="text-xs sm:text-sm text-base-content/60 font-medium">
+                        Renforcez votre capacité de livraison en temps réel.
+                    </p>
+                </div>
+
+                <!-- CARTE DE QUOTAS ACTUELS -->
+                <div class="p-4 rounded-2xl bg-base-100/90 border border-base-300 shadow-sm space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-base-content/70 uppercase">Utilisation du Quota</span>
+                        <span class="badge bg-[#059669]/10 text-[#059669] font-black text-xs">{{ entreprise.nb_livreurs_actuels }} / {{ entreprise.quota_livreurs }}</span>
+                    </div>
+                    <progress class="progress progress-success w-full h-2.5" value="{{ entreprise.nb_livreurs_actuels }}" max="{{ entreprise.quota_livreurs }}"></progress>
+                    <p class="text-[11px] text-base-content/50">
+                        Palier actuel : <strong class="text-base-content uppercase">{{ entreprise.get_palier_display }}</strong>
+                    </p>
+                </div>
+
+                <!-- LISTE DES AVANTAGES LLIREUR RATTACHÉ -->
+                <div class="space-y-4">
+                    <div class="flex items-start gap-3 p-3 rounded-2xl bg-base-100/80 border border-base-300 shadow-sm">
+                        <div class="w-8 h-8 rounded-xl bg-[#059669]/10 text-[#059669] flex items-center justify-center shrink-0 font-bold text-sm">
+                            ⚡
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-bold text-base-content">Identifiants Automatisés</h3>
+                            <p class="text-[11px] text-base-content/60">Un compte sécurisé est généré et transmis instantanément au livreur.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3 p-3 rounded-2xl bg-base-100/80 border border-base-300 shadow-sm">
+                        <div class="w-8 h-8 rounded-xl bg-[#F97316]/10 text-[#F97316] flex items-center justify-center shrink-0 font-bold text-sm">
+                            🛡️
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-bold text-base-content">Suivi Centralisé</h3>
+                            <p class="text-[11px] text-base-content/60">Assignez des courses et suivez l'activité de vos livreurs depuis votre console.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER INFO -->
+            <div class="mt-8 pt-6 border-t border-base-300/60 flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-[#059669] text-white flex items-center justify-center text-xs font-extrabold shrink-0">
+                    i
+                </div>
+                <p class="text-[11px] font-semibold text-base-content/70">
+                    Le livreur pourra se connecter immédiatement avec son numéro de téléphone et son mot de passe temporaire.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+</div>
 {% endblock %}

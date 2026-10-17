@@ -4154,6 +4154,14 @@
       --tw-shadow-color: color-mix(in oklab, color-mix(in oklab, #059669 20%, transparent) var(--tw-shadow-alpha), transparent);
     }
   }
+  .shadow-\[\#059669\]\/25 {
+    --tw-shadow-color: color-mix(in srgb, #059669 25%, transparent);
+  }
+  @supports (color: color-mix(in lab, red, red)) {
+    .shadow-\[\#059669\]\/25 {
+      --tw-shadow-color: color-mix(in oklab, color-mix(in oklab, #059669 25%, transparent) var(--tw-shadow-alpha), transparent);
+    }
+  }
   .shadow-\[\#059669\]\/30 {
     --tw-shadow-color: color-mix(in srgb, #059669 30%, transparent);
   }

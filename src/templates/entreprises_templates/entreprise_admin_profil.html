@@ -131,7 +131,7 @@
                             </button>
                         {% elif entreprise.peut_ajouter_livreur %}
                             <span class="text-xs font-semibold text-[#059669]">✅ Emplacement(s) disponible(s)</span>
-                            <a href="{% url 'accounts_app:ajouter-livreur-entreprise' %}" class="btn btn-xs bg-[#059669] text-white hover:bg-[#047857] border-none rounded-lg font-bold">
+                            <a href="{% url 'accounts_app:inscription-livreur-entreprise' %}" class="btn btn-xs bg-[#059669] text-white hover:bg-[#047857] border-none rounded-lg font-bold">
                                 + Ajouter
                             </a>
                         {% else %}
@@ -252,7 +252,7 @@
                         Choisir un palier pour ajouter des livreurs
                     </button>
                 {% elif entreprise.peut_ajouter_livreur %}
-                    <a href="{% url 'accounts_app:ajouter-livreur-entreprise' %}" class="btn btn-sm bg-[#059669] text-white hover:bg-[#047857] border-none rounded-xl font-bold shadow-md">
+                    <a href="{% url 'accounts_app:inscription-livreur-entreprise' %}" class="btn btn-sm bg-[#059669] text-white hover:bg-[#047857] border-none rounded-xl font-bold shadow-md">
                         + Nouveau Livreur
                     </a>
                 {% else %}

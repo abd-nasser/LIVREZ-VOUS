@@ -289,7 +289,10 @@ class InscriptionLivreurEntrepriseForm(forms.ModelForm):
         super().__init__(*args, **kwargs)  # Initialise les champs Django, y compris les données POST éventuelles.
         self.user = user  # Mémorise l'administrateur connecté transmis par get_form_kwargs().
         for field in self.fields.values():
-            field.widget.attrs['class'] = 'input input-bordered w-full rounded-xl'  # Applique le style partagé aux contrôles du formulaire.
+            field.widget.attrs['class'] = (
+                'input input-bordered w-full rounded-xl '
+                'focus:border-[#059669] focus:ring-1 focus:ring-[#059669]'
+            )  # Applique le style partagé aux contrôles du formulaire.
 
     def clean_telephone(self):  # Ajoute les vérifications métier au nettoyage du numéro.
         telephone = self.cleaned_data.get('telephone')  # Récupère le numéro validé par les contrôles de base de Django.

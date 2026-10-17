@@ -1,0 +1,213 @@
+<form hx-post="{% url 'accounts_app:inscription-livreur-entreprise' %}"
+      hx-target="#form-container"
+      hx-swap="innerHTML"
+      hx-indicator="#register-result-indic"
+      hx-on::before-request="this.querySelector('#register-result-indic').classList.remove('pointer-events-none')"
+      hx-on::after-request="this.querySelector('#register-result-indic').classList.add('pointer-events-none')"
+      hx-encoding="multipart/form-data"
+      enctype="multipart/form-data"
+      class="relative h-full space-y-8">
+
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-600 text-xs font-semibold space-y-1 animate-fade-in">
+            {% for error in form.non_field_errors %}
+                <p class="flex items-center gap-2">
+                    <span aria-hidden="true">⚠️</span> {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="space-y-4">
+        <div class="flex items-center gap-2 border-b border-base-200 pb-2">
+            <span class="w-6 h-6 rounded-full bg-[#059669] text-white flex items-center justify-center font-bold text-xs">1</span>
+            <h2 class="font-bold text-lg">Informations du livreur</h2>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="form-control w-full">
+                <label class="label py-1" for="{{ form.first_name.id_for_label }}">
+                    <span class="label-text font-semibold">Prénom <span class="text-rose-500">*</span></span>
+                </label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                    <span class="text-error text-xs mt-1">{{ form.first_name.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="form-control w-full">
+                <label class="label py-1" for="{{ form.last_name.id_for_label }}">
+                    <span class="label-text font-semibold">Nom <span class="text-rose-500">*</span></span>
+                </label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                    <span class="text-error text-xs mt-1">{{ form.last_name.errors.0 }}</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="form-control w-full">
+                <label class="label py-1" for="{{ form.telephone.id_for_label }}">
+                    <span class="label-text font-semibold">Téléphone WhatsApp <span class="text-rose-500">*</span></span>
+                </label>
+                {{ form.telephone }}
+                {% if form.telephone.help_text %}
+                    <span class="text-xs text-base-content/50 mt-1">{{ form.telephone.help_text }}</span>
+                {% endif %}
+                {% if form.telephone.errors %}
+                    <span class="text-error text-xs mt-1">{{ form.telephone.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="form-control w-full">
+                <label class="label py-1" for="{{ form.email.id_for_label }}">
+                    <span class="label-text font-semibold">Adresse e-mail <span class="text-rose-500">*</span></span>
+                </label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <span class="text-error text-xs mt-1">{{ form.email.errors.0 }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="space-y-4 pt-2">
+        <div class="flex items-center gap-2 border-b border-base-200 pb-2">
+            <span class="w-6 h-6 rounded-full bg-[#059669] text-white flex items-center justify-center font-bold text-xs">2</span>
+            <h2 class="font-bold text-lg">Moyen de transport</h2>
+        </div>
+
+        <div class="form-control w-full">
+            <label class="label py-1" for="{{ form.type_vehicule.id_for_label }}">
+                <span class="label-text font-semibold">Type de véhicule <span class="text-rose-500">*</span></span>
+            </label>
+            {{ form.type_vehicule }}
+            {% if form.type_vehicule.errors %}
+                <span class="text-error text-xs mt-1">{{ form.type_vehicule.errors.0 }}</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="space-y-4 pt-2" x-data="{ photoProfil: null, cniRecto: null, cniVerso: null, photoSelfie: null }">
+        <div class="flex items-center justify-between border-b border-base-200 pb-2">
+            <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-[#059669] text-white flex items-center justify-center font-bold text-xs">3</span>
+                <h2 class="font-bold text-lg">Pièces de vérification</h2>
+            </div>
+            <span class="badge badge-ghost text-[10px] font-bold uppercase tracking-wider">Facultatif</span>
+        </div>
+        <p class="text-xs text-base-content/60">Ces photos peuvent être ajoutées maintenant ou ultérieurement.</p>
+
+        <div class="form-control w-full">
+            <label class="label py-1" for="id_photo_profil">
+                <span class="label-text font-semibold">Photo de profil <span class="text-xs font-normal text-base-content/50">(Facultatif)</span></span>
+            </label>
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-2xl bg-base-200 border-2 border-dashed border-base-300 flex items-center justify-center overflow-hidden shrink-0">
+                    <template x-if="photoProfil">
+                        <img :src="photoProfil" class="w-full h-full object-cover" alt="Aperçu de la photo de profil" />
+                    </template>
+                    <template x-if="!photoProfil">
+                        <span class="text-2xl" aria-hidden="true">📸</span>
+                    </template>
+                </div>
+                <input type="file" name="photo_profil" id="id_photo_profil" accept="image/*"
+                       @change="photoProfil = URL.createObjectURL($event.target.files[0])"
+                       class="file-input file-input-bordered file-input-sm w-full rounded-xl file-input-primary" />
+            </div>
+            {% if form.photo_profil.errors %}
+                <span class="text-error text-xs mt-1">{{ form.photo_profil.errors.0 }}</span>
+            {% endif %}
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="form-control w-full">
+                <label class="label py-1" for="id_photo_cni_recto">
+                    <span class="label-text font-semibold">Pièce d'identité — recto <span class="text-xs font-normal text-base-content/50">(Facultatif)</span></span>
+                </label>
+                <div class="border-2 border-dashed border-base-300 rounded-2xl p-3 text-center bg-base-200/40 hover:border-[#059669] transition-colors relative">
+                    <template x-if="cniRecto">
+                        <img :src="cniRecto" class="h-24 mx-auto rounded-lg object-cover mb-2" alt="Aperçu du recto de la pièce d'identité" />
+                    </template>
+                    <template x-if="!cniRecto">
+                        <div class="py-3">
+                            <span class="text-2xl block mb-1" aria-hidden="true">🪪</span>
+                            <span class="text-xs text-base-content/60">Recto de la carte</span>
+                        </div>
+                    </template>
+                    <input type="file" name="photo_cni_recto" id="id_photo_cni_recto" accept="image/*"
+                           @change="cniRecto = URL.createObjectURL($event.target.files[0])"
+                           class="file-input file-input-ghost file-input-xs w-full" />
+                </div>
+                {% if form.photo_cni_recto.errors %}
+                    <span class="text-error text-xs mt-1">{{ form.photo_cni_recto.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="form-control w-full">
+                <label class="label py-1" for="id_photo_cni_verso">
+                    <span class="label-text font-semibold">Pièce d'identité — verso <span class="text-xs font-normal text-base-content/50">(Facultatif)</span></span>
+                </label>
+                <div class="border-2 border-dashed border-base-300 rounded-2xl p-3 text-center bg-base-200/40 hover:border-[#059669] transition-colors relative">
+                    <template x-if="cniVerso">
+                        <img :src="cniVerso" class="h-24 mx-auto rounded-lg object-cover mb-2" alt="Aperçu du verso de la pièce d'identité" />
+                    </template>
+                    <template x-if="!cniVerso">
+                        <div class="py-3">
+                            <span class="text-2xl block mb-1" aria-hidden="true">🔄</span>
+                            <span class="text-xs text-base-content/60">Verso de la carte</span>
+                        </div>
+                    </template>
+                    <input type="file" name="photo_cni_verso" id="id_photo_cni_verso" accept="image/*"
+                           @change="cniVerso = URL.createObjectURL($event.target.files[0])"
+                           class="file-input file-input-ghost file-input-xs w-full" />
+                </div>
+                {% if form.photo_cni_verso.errors %}
+                    <span class="text-error text-xs mt-1">{{ form.photo_cni_verso.errors.0 }}</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-control w-full">
+            <label class="label py-1" for="id_photo_selfie">
+                <span class="label-text font-semibold">Selfie de vérification <span class="text-xs font-normal text-base-content/50">(Facultatif)</span></span>
+            </label>
+            <div class="border-2 border-dashed border-base-300 rounded-2xl p-4 text-center bg-base-200/40 hover:border-[#059669] transition-colors">
+                <template x-if="photoSelfie">
+                    <img :src="photoSelfie" class="h-32 mx-auto rounded-xl object-cover mb-2" alt="Aperçu du selfie de vérification" />
+                </template>
+                <template x-if="!photoSelfie">
+                    <div class="py-2">
+                        <span class="text-3xl block mb-1" aria-hidden="true">🤳</span>
+                        <p class="text-xs font-semibold">Ajoutez un selfie de vérification</p>
+                        <p class="text-[10px] text-base-content/50">Cette photo est facultative et peut être fournie ultérieurement.</p>
+                    </div>
+                </template>
+                <input type="file" name="photo_selfie" id="id_photo_selfie" accept="image/*"
+                       @change="photoSelfie = URL.createObjectURL($event.target.files[0])"
+                       class="file-input file-input-bordered file-input-sm w-full rounded-xl mt-2" />
+            </div>
+            {% if form.photo_selfie.errors %}
+                <span class="text-error text-xs mt-1">{{ form.photo_selfie.errors.0 }}</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="register-result-indic" class="htmx-indicator pointer-events-none absolute inset-0 z-50 flex items-center justify-center rounded-2xl border border-base-300 bg-base-100/90 p-6 text-center backdrop-blur-sm transition-opacity" role="status" aria-live="polite" aria-atomic="true">
+        <div class="flex flex-col items-center gap-3">
+            <span class="loading loading-spinner loading-lg text-[#059669]" aria-hidden="true"></span>
+            <p class="font-bold text-base-content">Création du compte en cours...</p>
+            <p class="text-sm text-base-content/70">Les informations du livreur sont en cours de traitement.</p>
+        </div>
+    </div>
+
+    <div class="pt-4">
+        <button type="submit" class="btn bg-[#059669] hover:bg-[#047857] text-white border-none w-full btn-lg rounded-2xl font-bold shadow-xl shadow-[#059669]/25 transition-all transform active:scale-95">
+            Enregistrer et notifier le livreur
+        </button>
+    </div>
+
+</form>

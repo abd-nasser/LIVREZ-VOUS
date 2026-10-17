@@ -7,7 +7,8 @@ urlpatterns = [
     path('connexion/', views.login_view, name="login"),
     path('deconnexion/', views.logout_view, name="logout"),
     path('inscription/livreurs/', views.CreateLivreurView.as_view(), name="inscription-livreurs"),
-    path('entreprise/livreurs/ajouter/', views.CreateLivreurEntrepriseView.as_view(), name="ajouter-livreur-entreprise"),
+    path('entreprise/livreurs/ajouter/', views.CreateLivreurEntrepriseView.as_view(), name="inscription-livreur-entreprise"),
     path('inscription/clients/', views.CreateClientView.as_view(), name="inscription-clients"),
     path('inscription/entreprises/', views.CreateEntrepriseView.as_view(), name="inscription-entreprises"),
+   
 ]

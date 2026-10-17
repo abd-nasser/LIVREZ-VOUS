@@ -1,0 +1,29 @@
+<div class="p-8 text-center space-y-6 animate-fade-in bg-base-100 rounded-3xl">
+    
+    <!-- Icône Succès Animée -->
+    <div class="w-20 h-20 bg-[#059669]/10 text-[#059669] rounded-3xl flex items-center justify-center mx-auto text-4xl shadow-inner">
+        🎉
+    </div>
+
+    <div class="space-y-2">
+        <h2 class="text-2xl font-black text-base-content">
+            {{ Title|default:"Bienvenue" }}
+        </h2>
+        <p class="text-sm text-base-content/70 max-w-md mx-auto leading-relaxed font-medium">
+            {{ message }}
+        </p>
+    </div>
+
+    <!-- Boutons d'action après succès -->
+    <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a href="{% url 'accounts_app:inscription-livreur-entreprise' %}" 
+           class="btn bg-[#059669] hover:bg-[#047857] text-white border-none rounded-2xl font-bold px-6 shadow-md shadow-[#059669]/20">
+            + Ajouter un autre livreur
+        </a>
+        <a href="#" 
+           class="btn btn-outline border-base-300 hover:bg-base-200 rounded-2xl font-bold px-6">
+            Retour au tableau de bord
+        </a>
+    </div>
+
+</div>

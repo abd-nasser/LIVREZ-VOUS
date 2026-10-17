@@ -119,7 +119,7 @@ class CreateLivreurEntrepriseView(LoginRequiredMixin, UserPassesTestMixin, Creat
         return context
 
     def form_valid(self, form):
-        try:
+        '''try:
             validate_credential_delivery_configuration()
         except CredentialDeliveryError as error:
             form.add_error(None, str(error))
@@ -145,7 +145,8 @@ class CreateLivreurEntrepriseView(LoginRequiredMixin, UserPassesTestMixin, Creat
             )
             return render(self.request, 'partials/accounts/_livreur_entreprise_create_error.html', {
                 'form': form,
-            })
+            })'''
+        form.save()
 
         response = render(self.request, 'partials/accounts/_livreur_entreprise_create_success.html', {
                         'success': True,

@@ -5,6 +5,8 @@
 {% block content %}
 <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6" x-data="{ activeTab: 'infos' }">
 
+    {% include 'partials/_page_back_header.html' with back_url='/' back_label="Retour à l'accueil" badge_label="Espace Client" %}
+
     <!-- ================================================================= -->
     <!-- CARD BANNIÈRE & PROFIL -->
     <!-- ================================================================= -->

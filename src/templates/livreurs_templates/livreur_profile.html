@@ -3,6 +3,8 @@
 {% block content %}
 <div class="max-w-6xl mx-auto p-4 sm:p-6 space-y-8 animate-fade-in" x-data="{ estDisponible: {{ livreur.est_disponible|yesno:'true,false' }} }">
 
+    {% include 'partials/_page_back_header.html' with back_url='/' back_label="Retour à l'accueil" badge_label="Espace Livreur" %}
+
     <!-- HEADER / BANNIÈRE PROFIL -->
     <div class="relative bg-base-100 border border-base-300 rounded-3xl p-6 sm:p-8 shadow-xl overflow-hidden">
         <div class="absolute -top-12 -right-12 w-48 h-48 bg-[#059669]/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -132,9 +134,11 @@
             </div>
 
             <div class="pt-4 flex justify-end">
-                <button class="btn bg-[#059669] hover:bg-[#047857] text-white border-none rounded-xl btn-sm font-bold shadow-md">
-                    Modifier mes informations
-                </button>
+                {% if request.user.pk == livreur.user_id %}
+                    <a href="{% url 'accounts_app:change-livreur-credentials' %}" class="btn bg-[#059669] hover:bg-[#047857] text-white border-none rounded-xl btn-sm font-bold shadow-md">
+                        Modifier mes identifiants
+                    </a>
+                {% endif %}
             </div>
         </div>
 

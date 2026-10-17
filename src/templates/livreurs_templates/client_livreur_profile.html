@@ -3,6 +3,9 @@
 {% block content %}
 <div class="max-w-4xl mx-auto p-4 sm:p-6 space-y-8 animate-fade-in">
 
+    {% url 'livreurs_app:list-livreurs' as back_url %}
+    {% include 'partials/_page_back_header.html' with back_url=back_url back_label="Retour aux livreurs" badge_label="Profil Livreur" %}
+
     <!-- CARTE DE PRESENTATION PUBLIQUE -->
     <div class="bg-base-100 border border-base-300 rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden text-center sm:text-left">
         <div class="absolute -top-10 -right-10 w-40 h-40 bg-[#059669]/10 rounded-full blur-2xl pointer-events-none"></div>

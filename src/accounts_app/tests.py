@@ -5,10 +5,169 @@ from django.test import TestCase
 from django.test import override_settings
 from django.urls import reverse
 from django.core import mail
+from django.contrib.auth import HASH_SESSION_KEY
 from clients_app.models import Client
 from entreprises_app.models import Entreprise
 from livreurs_app.models import Livreur
+from .forms import ChangeCredentialsLivreurEntrepriseForm
 from .models import User
+
+
+class ChangeCredentialsLivreurEntrepriseFormTests(TestCase):
+	def setUp(self):
+		self.user = User.objects.create_user(
+			telephone='+22670000001',
+			username='courier.old',
+			first_name='Courier',
+			last_name='Test',
+			password='old-secret-456',
+			role='livreur',
+		)
+
+	def form_data(self, **overrides):
+		data = {
+			'new_username': 'courier.new',
+			'new_password': 'Violet-Planet-47!Strong',
+			'current_password': 'old-secret-456',
+			'confirm_new_password': 'Violet-Planet-47!Strong',
+		}
+		data.update(overrides)
+		return data
+
+	def test_valid_form_changes_username_and_password(self):
+		form = ChangeCredentialsLivreurEntrepriseForm(
+			data=self.form_data(),
+			user=self.user,
+		)
+
+		self.assertTrue(form.is_valid(), form.errors)
+		updated_user = form.save()
+		updated_user.refresh_from_db()
+
+		self.assertEqual(updated_user.username, 'courier.new')
+		self.assertTrue(updated_user.check_password('Violet-Planet-47!Strong'))
+
+	def test_incorrect_current_password_is_rejected(self):
+		form = ChangeCredentialsLivreurEntrepriseForm(
+			data=self.form_data(current_password='wrong-password'),
+			user=self.user,
+		)
+
+		self.assertFalse(form.is_valid())
+		self.assertIn('current_password', form.errors)
+
+	def test_username_used_by_another_user_is_rejected(self):
+		User.objects.create_user(
+			telephone='+22670000002',
+			username='courier.taken',
+			first_name='Other',
+			last_name='Courier',
+			password='old-secret-456',
+		)
+		form = ChangeCredentialsLivreurEntrepriseForm(
+			data=self.form_data(new_username='courier.taken'),
+			user=self.user,
+		)
+
+		self.assertFalse(form.is_valid())
+		self.assertIn('new_username', form.errors)
+
+	def test_password_confirmation_must_match(self):
+		form = ChangeCredentialsLivreurEntrepriseForm(
+			data=self.form_data(confirm_new_password='Different-Password-3!'),
+			user=self.user,
+		)
+
+		self.assertFalse(form.is_valid())
+		self.assertIn('confirm_new_password', form.errors)
+
+	def test_new_password_must_pass_django_password_validators(self):
+		form = ChangeCredentialsLivreurEntrepriseForm(
+			data=self.form_data(
+				new_password='password',
+				confirm_new_password='password',
+			),
+			user=self.user,
+		)
+
+		self.assertFalse(form.is_valid())
+		self.assertIn('new_password', form.errors)
+
+
+class ChangeCredentialsLivreurEntrepriseViewTests(TestCase):
+	def setUp(self):
+		self.user = User.objects.create_user(
+			telephone='+22670000003',
+			username='courier.view',
+			first_name='Courier',
+			last_name='View',
+			password='old-secret-456',
+			role='livreur',
+		)
+		self.livreur = Livreur.objects.create(
+			user=self.user,
+			type_vehicule='moto',
+		)
+		self.url = reverse('accounts_app:change-livreur-credentials')
+
+	def test_successful_password_change_keeps_user_session_active(self):
+		self.client.force_login(self.user)
+
+		response = self.client.post(self.url, {
+			'new_username': 'courier.updated',
+			'new_password': 'Violet-Planet-47!Strong',
+			'current_password': 'old-secret-456',
+			'confirm_new_password': 'Violet-Planet-47!Strong',
+		})
+
+		self.user.refresh_from_db()
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response['HX-Trigger'], 'livreur-credentials-change-success')
+		self.assertContains(response, 'Identifiants mis à jour')
+		self.assertContains(response, reverse(
+			'livreurs_app:livreur-profil',
+			args=[self.livreur.pk],
+		))
+		self.assertEqual(
+			self.client.session[HASH_SESSION_KEY],
+			self.user.get_session_auth_hash(),
+		)
+		self.assertTrue(self.user.check_password('Violet-Planet-47!Strong'))
+		self.assertEqual(self.user.username, 'courier.updated')
+
+	def test_invalid_submission_returns_form_errors_through_htmx(self):
+		self.client.force_login(self.user)
+
+		response = self.client.post(self.url, {
+			'new_username': 'courier.updated',
+			'new_password': 'Violet-Planet-47!Strong',
+			'current_password': 'wrong-password',
+			'confirm_new_password': 'Violet-Planet-47!Strong',
+		}, HTTP_HX_REQUEST='true')
+
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(
+			response['HX-Retarget'],
+			'#credentials-form-container',
+		)
+		self.assertContains(response, 'Le mot de passe actuel est incorrect.')
+		self.user.refresh_from_db()
+		self.assertEqual(self.user.username, 'courier.view')
+
+	def test_non_livreur_cannot_access_credentials_change(self):
+		client_user = User.objects.create_user(
+			telephone='+22670000004',
+			username='client.view',
+			first_name='Client',
+			last_name='View',
+			password='old-secret-456',
+			role='client',
+		)
+		self.client.force_login(client_user)
+
+		response = self.client.get(self.url)
+
+		self.assertEqual(response.status_code, 403)
 
 
 class LoginViewTests(TestCase):

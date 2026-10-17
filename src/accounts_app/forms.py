@@ -2,6 +2,8 @@ from uuid import uuid4
 
 from django import forms
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 from django.utils.text import slugify
 from clients_app.models import Client
@@ -345,3 +347,63 @@ class InscriptionLivreurEntrepriseForm(forms.ModelForm):
             livreur.save()  # Enregistre le profil et son association à l'utilisateur et à l'entreprise.
 
         return livreur  # Renvoie le profil créé à la vue appelante.
+    
+
+class ChangeCredentialsLivreurEntrepriseForm(forms.Form):
+    """Formulaire pour changer les identifiants d'un livreur d'entreprise."""
+    
+    new_username = forms.CharField(max_length=30, label="Nouveau nom d'utilisateur")
+    new_password = forms.CharField(widget=forms.PasswordInput, label="Nouveau mot de passe")
+    current_password = forms.CharField(widget=forms.PasswordInput, label="Mot de passe actuel")
+    confirm_new_password = forms.CharField(widget=forms.PasswordInput, label="Confirmer le nouveau mot de passe")
+
+    def __init__(self, *args, user, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+        for field in self.fields.values():
+            field.widget.attrs['class'] = (
+                'input input-bordered w-full rounded-xl '
+                'focus:border-[#059669] focus:ring-1 focus:ring-[#059669]'
+            )
+
+    def clean_new_username(self):
+        new_username = self.cleaned_data['new_username']
+        if User.objects.filter(username=new_username).exclude(pk=self.user.pk).exists():
+            raise forms.ValidationError("Ce nom d'utilisateur est déjà utilisé.")
+        return new_username
+
+    def clean_current_password(self):
+        current_password = self.cleaned_data['current_password']
+        if not self.user.check_password(current_password):
+            raise forms.ValidationError("Le mot de passe actuel est incorrect.")
+        return current_password
+
+    def clean_new_password(self):
+        new_password = self.cleaned_data['new_password']
+        try:
+            validate_password(new_password, user=self.user)
+        except DjangoValidationError as error:
+            raise forms.ValidationError(error.messages) from error
+        return new_password
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get("new_password")
+        confirm_new_password = cleaned_data.get("confirm_new_password")
+
+        if new_password and confirm_new_password and new_password != confirm_new_password:
+            self.add_error(
+                "confirm_new_password",
+                "Les mots de passe ne correspondent pas.",
+            )
+
+        return cleaned_data
+
+    def save(self):
+        if not self.is_valid():
+            raise ValueError("Le formulaire doit être valide avant l'enregistrement.")
+
+        self.user.username = self.cleaned_data['new_username']
+        self.user.set_password(self.cleaned_data['new_password'])
+        self.user.save(update_fields=['username', 'password'])
+        return self.user

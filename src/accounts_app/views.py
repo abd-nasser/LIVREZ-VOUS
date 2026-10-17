@@ -1,12 +1,13 @@
 import logging
 
 from django.contrib.auth import authenticate, login, logout as auth_logout
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db import transaction
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.views.generic import CreateView
+from django.views.generic import CreateView, FormView
 from .notifications import (
     CredentialDeliveryError,
     send_courier_credentials,
@@ -21,7 +22,8 @@ from django.contrib.auth.decorators import login_required
 from .forms import (InscriptionEntrepriseForm, 
                     InscriptionLivreurForm, 
                     InscriptionLivreurEntrepriseForm,
-                    InscriptionClientForm)
+                    InscriptionClientForm,
+                    ChangeCredentialsLivreurEntrepriseForm)
 
 
 logger = logging.getLogger(__name__)
@@ -192,6 +194,58 @@ class CreateClientView(CreateView):
         response['HX-Retarget'] = '#form-container'
         response['HX-Reswap'] = 'innerHTML'
         return response #test
+
+
+class ChangeCredentialsLivreurEntrepriseView(
+    LoginRequiredMixin,
+    UserPassesTestMixin,
+    FormView,
+):
+    form_class = ChangeCredentialsLivreurEntrepriseForm
+    template_name = 'accounts_templates/change_livreur_credentials.html'
+
+    def test_func(self):
+        return (
+            self.request.user.role == 'livreur'
+            and Livreur.objects.filter(user=self.request.user).exists()
+        )
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['livreur'] = self.request.user.livreur_profil
+        return context
+
+    def form_valid(self, form):
+        user = form.save()
+        update_session_auth_hash(self.request, user)
+        livreur = user.livreur_profil
+        response = render(
+            self.request,
+            'partials/accounts/_change_livreur_credentials_result.html',
+            {
+                'success': True,
+                'Title': "Identifiants modifiés",
+                'message': "Votre nom d'utilisateur et votre mot de passe ont été mis à jour.",
+                'profile_url': livreur.get_absolute_url(),
+            },
+        )
+        response['HX-Trigger'] = 'livreur-credentials-change-success'
+        return response
+
+    def form_invalid(self, form):
+        response = render(
+            self.request,
+            'partials/accounts/_change_livreur_credentials_form.html',
+            {'form': form},
+        )
+        response['HX-Retarget'] = '#credentials-form-container'
+        response['HX-Reswap'] = 'innerHTML'
+        return response
 
 
 def login_view(request):

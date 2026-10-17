@@ -10,5 +10,10 @@ urlpatterns = [
     path('entreprise/livreurs/ajouter/', views.CreateLivreurEntrepriseView.as_view(), name="inscription-livreur-entreprise"),
     path('inscription/clients/', views.CreateClientView.as_view(), name="inscription-clients"),
     path('inscription/entreprises/', views.CreateEntrepriseView.as_view(), name="inscription-entreprises"),
+    path(
+        'livreur/identifiants/modifier/',
+        views.ChangeCredentialsLivreurEntrepriseView.as_view(),
+        name="change-livreur-credentials",
+    ),
    
 ]
